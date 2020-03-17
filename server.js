@@ -7,13 +7,13 @@ const cors = require('cors');
 const app = express()
 
 app.use(express.json({ extended: true }))
-// app.use(
-//   cors({
-//     credentials: true,
-//     origin: ["https://sheltered-headland-76340.herokuapp.com:3000"],
-//     optionsSuccessStatus: 200
-//   })
-// );
+app.use(
+  cors({
+    credentials: true,
+    origin: ["https://sheltered-headland-76340.herokuapp.com:3000"],
+    optionsSuccessStatus: 200
+  })
+);
 app.use('/api/auth', require('./routes/auth.routes'))
 app.use('/api/gallery', require('./routes/gallery.routes'))
 
