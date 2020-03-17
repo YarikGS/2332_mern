@@ -10,7 +10,7 @@ app.use(express.json({ extended: true }))
 app.use(
   cors({
     credentials: true,
-    origin: ["http://localhost:3000"],
+    origin: ["https://sheltered-headland-76340.herokuapp.com:3000"],
     optionsSuccessStatus: 200
   })
 );
