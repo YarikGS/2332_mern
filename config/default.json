@@ -1,6 +1,6 @@
 {
-	"port": 5000,
+	"port": 80,
 	"mongoUri": "mongodb+srv://dbUser:DbrS4IasMvboz24K@cluster0-vz8px.mongodb.net/2332?retryWrites=true&w=majority",
 	"jwtToken": "2332 app server token",
-	"baseUrl": "https://sheltered-headland-76340.herokuapp.com:5000"
+	"baseUrl": "https://sheltered-headland-76340.herokuapp.com"
 }

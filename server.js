@@ -18,20 +18,20 @@ app.use('/api/auth', require('./routes/auth.routes'))
 app.use('/api/gallery', require('./routes/gallery.routes'))
 
 if (process.env.NODE_ENV === 'production'){
-	app.use('/', express.static(path.join(__dirname, 'client', 'build')))
+	app.use(express.static('client/build')) 
 	app.get('*', (req, res) => {
 		res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'))
 	})
 }
-
+ 
 // const PORT = config.get('port') || 5000
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8080;
 
 async function start()
 {
 	try{
 		mongoose.set('useCreateIndex', true);
-		await mongoose.connect(config.get('mongoUri'), {
+		await mongoose.connect(process.env.MONGODB_URI || config.get('mongoUri'), {
 			useNewUrlParser: true,
 			useUnifiedTopology: true
 		})
