@@ -35,16 +35,14 @@ app.use('/api/gallery', require('./routes/gallery.routes'))
 app.use('/api/slider', require('./routes/slider.routes'))
 app.use('/api/team', require('./routes/team.routes'))
 
-if (process.env.NODE_ENV === "production") {
 
-   app.use(express.static("build"));
+if (process.env.NODE_ENV === 'production'){
+	app.use(express.static('client/build')) 
+	app.get('*', (req, res) => {
+		res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'))
+	})
+}
 
-
-   app.get("*", (req, res) => {
-        res.sendFile(path.resolve(__dirname,  "build", "index.html"));
-    });
-
-  }
  
 // const PORT = config.get('port') || 5000
 const PORT = process.env.PORT || 8080;
