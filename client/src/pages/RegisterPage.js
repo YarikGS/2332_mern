@@ -28,7 +28,7 @@ export const RegisterPage = () => {
 	return(
 		<div className="row">
 			<div className="col s6 offset-s3">
-				<h1>2332 Register Admin Page</h1>
+				<h3>2332 Register Admin Page</h3>
 				<div className="card green darken-1">
 			        <div className="card-content white-text">
 			        	<span className="card-title">Create Admin</span>

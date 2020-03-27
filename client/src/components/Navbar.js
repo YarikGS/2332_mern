@@ -18,7 +18,8 @@ export const Navbar = () => {
 		      <a href="/" className="brand-logo">Welcome, {auth.username} at 2332 admin page</a>
 		      <ul id="nav-mobile" className="right hide-on-med-and-down">
 		      <li><NavLink to="/admin_gallery">Gallery Items</NavLink></li>
-		        <li><NavLink to="/gallery_add">Gallery Item Add</NavLink></li>
+		        <li><NavLink to="/admin_slider">Slider Items</NavLink></li>
+		        <li><NavLink to="/admin_team">Team Items</NavLink></li>
 		        <li><a href="/" onClick={logoutHandler}>Logout</a></li>
 		      </ul>
 		    </div>

@@ -26,7 +26,7 @@ export const GalleryPage = () => {
 	return(
 		<>
 			<div>
-				<h1>Gallery Page</h1>
+				<h3>Gallery Page</h3>
 				<a href="/login" className="btn blue darken-3">Auth Page</a>
 			</div>
 			{ !loading && videos && <VideosList videos={videos} /> }

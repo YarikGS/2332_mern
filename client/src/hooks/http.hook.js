@@ -8,11 +8,25 @@ export const useHttp = () => {
 		setLoading(true)
 		try {
 			if (body) {
-				body = JSON.stringify(body)
-				headers['Content-Type'] = 'application/json'
+				
+				if ( headers['Content-Type'] === undefined ) {
+					headers['Content-Type'] = 'application/json'
+					body = JSON.stringify(body)
+				}
+				else if( headers['Content-Type'] === 'multipart/form-data' ) {
+					delete headers['Content-Type']
+				}
 			}
 
-			const response = await fetch(url, {method, body, headers})
+			let response
+			response = await fetch(url, {method, body, headers})
+			// console.log('headers is ', headers)
+			// if ( headers === 0 ) {
+			// 	response = await fetch(url, {method, body})
+			// }else{
+			// 	response = await fetch(url, {method, body, headers})
+			// }
+			
 			const data = await response.json()
 
 			if (!response.ok) {
