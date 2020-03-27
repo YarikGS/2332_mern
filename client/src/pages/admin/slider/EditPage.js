@@ -58,7 +58,7 @@ export const AdminSliderEditPage = () => {
 				    	</div>
 			        </div>
 			        <div className="card-action">
-			        	<button onClick={editHandler} disabled={loading} className="btn yellow darken-2" style={{ marginRight: 10 }}>Edit Video</button>
+			        	<button onClick={editHandler} disabled={loading} className="btn yellow darken-2" style={{ marginRight: 10 }}>Edit Slider</button>
 			        </div>
 			    </div>
 

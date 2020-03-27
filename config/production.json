@@ -3,6 +3,5 @@
 	"mongoUri": "mongodb+srv://dbUser:DbrS4IasMvboz24K@cluster0-vz8px.mongodb.net/2332?retryWrites=true&w=majority",
 	"jwtToken": "2332 app server token",
 	"baseUrl": "https://sheltered-headland-76340.herokuapp.com",
-	"CLOUDINARY_API_KEY": "592181873915324",
-	"CLOUDINARY_API_SECRET": "SNT8KIS4vBfTUB0Mr6EtvkWKLJw"
+	
 }
