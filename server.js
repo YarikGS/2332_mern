@@ -6,18 +6,35 @@ const cors = require('cors');
 
 const app = express()
 
-app.use(express.json({ extended: true }))
 app.use(
   cors({
     credentials: true,
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     origin: ["*"],
-    "preflightContinue": true,
+    preflightContinue: true,
     optionsSuccessStatus: 200
   })
-);
+)
+
+const fs = require('fs');
+const dir = './client/public/uploads';
+
+if (!fs.existsSync(dir)){
+    fs.mkdirSync(dir)
+    fs.mkdirSync(dir+'/temp')
+    fs.mkdirSync(dir+'/slider')
+    fs.mkdirSync(dir+'/team')
+}
+
+app.use(express.static('./client/public/uploads'))
+
+app.use(express.json({ extended: true }))
+
 app.use('/api/auth', require('./routes/auth.routes'))
 app.use('/api/gallery', require('./routes/gallery.routes'))
+app.use('/api/slider', require('./routes/slider.routes'))
+app.use('/api/team', require('./routes/team.routes'))
+
 
 if (process.env.NODE_ENV === 'production'){
 	app.use(express.static('client/build')) 
@@ -33,6 +50,7 @@ async function start()
 {
 	try{
 		mongoose.set('useCreateIndex', true);
+		mongoose.set('useFindAndModify', false);
 		await mongoose.connect(process.env.MONGODB_URI || config.get('mongoUri'), {
 			useNewUrlParser: true,
 			useUnifiedTopology: true

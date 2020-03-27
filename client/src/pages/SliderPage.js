@@ -1,23 +1,23 @@
 import React, {useState, useEffect, useCallback} from 'react'
 import {useHttp} from '../hooks/http.hook'
 import {Loader} from '../components/Loader'
-import {VideosList} from '../components/VideosList'
+import {SliderList} from '../components/SliderList'
 
-export const GalleryPage = () => {
-	const [videos, setVideos] = useState([])
+export const SliderPage = () => {
+	const [slider, setSlider] = useState([])
 	const {loading, request} = useHttp()
 
-	const fetchVideos = useCallback( async () => {
+	const fetchSlider = useCallback( async () => {
 		try {
-			const fetched = await request('api/gallery/', 'GET', null)
+			const fetched = await request('api/slider/', 'GET', null)
 
-			setVideos(fetched)
+			setSlider(fetched)
 		} catch(e) {}
 	}, [request])
 
 	useEffect( () => {
-		fetchVideos()
-	}, [fetchVideos])
+		fetchSlider()
+	}, [fetchSlider])
 
 	if (loading) {
 		return <Loader />
@@ -26,10 +26,10 @@ export const GalleryPage = () => {
 	return(
 		<>
 			<div>
-				<h3>Gallery Page</h3>
+				<h3>Slider Page</h3>
 				<a href="/login" className="btn blue darken-3">Auth Page</a>
 			</div>
-			{ !loading && videos && <VideosList videos={videos} /> }
+			{ !loading && slider && <SliderList slider={slider} /> }
 		</>
 	)
 }

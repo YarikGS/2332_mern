@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react'
-import {useHttp} from '../hooks/http.hook'
-import {useMessage} from '../hooks/message.hook'
+import {useHttp} from '../../../hooks/http.hook'
+import {useMessage} from '../../../hooks/message.hook'
 import {useHistory} from 'react-router-dom'
 
 export const GalleryCreatePage = () => {
@@ -30,7 +30,7 @@ export const GalleryCreatePage = () => {
 
 	return(
 		<div className="row">
-			<h1>Create Gallery Item Page</h1>
+			<h3>Create Gallery Item Page</h3>
 			<div className="col s8 offset-s2" style={{paddingTop: '2rem'}}>
 
 				<div className="card blue darken-1">
