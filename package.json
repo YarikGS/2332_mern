@@ -4,7 +4,7 @@
   "description": "2332 basic backend",
   "main": "server.js",
   "scripts": {
-    "start": "cross-env NODE_ENV=production \"npm run server\" ",
+    "start": "cross-env NODE_ENV=production \"npm start\" ",
     "server": "nodemon server.js",
     "client": "npm run start --prefix client",
     "client:install": "npm install --prefix client",
