@@ -19,6 +19,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "proxy": "http://localhost:5000",
   "homepage": "https://sheltered-headland-76340.herokuapp.com/",
   "eslintConfig": {
     "extends": "react-app"

@@ -41,13 +41,13 @@ if (process.env.NODE_ENV === "production") {
 
 
    app.get("*", (req, res) => {
-        res.sendFile(path.resolve(__dirname,  "build", "index.html"));
+        res.sendFile(path.join(__dirname+'/client/build/index.html'));
     });
 
   }
  
 // const PORT = config.get('port') || 5000
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 5000;
 
 async function start()
 {
