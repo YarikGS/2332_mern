@@ -40,7 +40,7 @@ export const TeamList = ({team, auth}) => {
         		return (
 					<tr key={team._id}>
 			            <td>
-                    <img src={`/uploads/team/${team.image}`} alt="image" style={{width: '150px'}}  />
+                    <img src={team.image} alt="image" style={{width: '150px'}}  />
                   </td>
 			            <td>{team.caption}</td>
                   <td>{team.text}</td>
@@ -49,9 +49,9 @@ export const TeamList = ({team, auth}) => {
                     <td>
                       <Link to={{
                         pathname: `/admin_edit_team/${team._id}`,
-                        state: { image: team.image, caption: team.caption, text: team.text }
+                        state: { imageId: team.imageId, image: team.image, caption: team.caption, text: team.text }
                       }} className="btn-floating btn-large waves-effect waves-light blue"> <i className="material-icons">edit</i></Link>
-                      <button onClick={() => deleteHandler(team._id+'/'+team.image)} disabled={loading} className="btn-floating btn-large waves-effect waves-light red"><i className="material-icons">delete</i></button>
+                      <button onClick={() => deleteHandler(team._id+'/'+team.imageId)} disabled={loading} className="btn-floating btn-large waves-effect waves-light red"><i className="material-icons">delete</i></button>
                     </td>
                   }
 			         </tr>

@@ -4,32 +4,51 @@ const multer  = require('multer')
 const {check, body, validationResult} = require('express-validator')
 const Team = require('../models/Team')
 const router = Router()
-const move = require('../filemove');
+// const move = require('../filemove');
 
-const fs = require('fs');
+// const fs = require('fs');
 
-// Set storage engine
+// // Set storage engine
+// const storage = multer.diskStorage({
+//     destination: './client/public/uploads/temp',
+//     filename: function (req, file, cb) {        
+//         // null as first argument means no error
+//         const path = require('path')
+// 	    cb(null, Date.now() + path.extname(file.originalname) )
+//     }
+// })
+
+// // Init upload
+// const upload = multer({
+//     storage: storage, 
+//     limits: {
+//         fileSize: 2500000
+//     },
+
+//     fileFilter: function (req, file, cb) {
+//         sanitizeFile(file, cb);
+//     }
+
+// }).single('image')
+
+
 const storage = multer.diskStorage({
-    destination: './client/public/uploads/temp',
-    filename: function (req, file, cb) {        
-        // null as first argument means no error
-        const path = require('path')
-	    cb(null, Date.now() + path.extname(file.originalname) )
-    }
-})
+  filename: function(req, file, callback) {
+    callback(null, Date.now() + file.originalname);
+  }
+});
 
-// Init upload
-const upload = multer({
-    storage: storage, 
-    limits: {
-        fileSize: 2500000
-    },
-
-    fileFilter: function (req, file, cb) {
+const upload = multer({ storage: storage, fileFilter: function (req, file, cb) {
         sanitizeFile(file, cb);
-    }
+    } }).single('image');
 
-}).single('image')
+const cloudinary = require("cloudinary");
+
+cloudinary.config({
+  cloud_name: "dpoxszsea",
+  api_key: config.get('CLOUDINARY_API_KEY') || process.env.CLOUDINARY_API_KEY,
+  api_secret: config.get('CLOUDINARY_API_SECRET') || process.env.CLOUDINARY_API_SECRET
+});
 
 // api/team/add
 router.post(
@@ -39,7 +58,6 @@ router.post(
 			upload(req, res, (err) => {				
 		        if (err){
 		        	// return err 
-		        	clearTemp()
 		            return res.status(400).json({
 						message: err.message
 					})
@@ -56,7 +74,7 @@ router.post(
 
 		            	
 						if (caption.length < 5 || text.length < 5 ) {
-							clearTemp()
+							
 						    return res.status(400).json({
 								message: 'text fields minimum length is 5'
 							})
@@ -64,27 +82,21 @@ router.post(
 
 		            	const teamFile = req.file
 
-						const oldPath = teamFile['destination']+'/'+teamFile['filename']
-
-						const newPath = './client/public/uploads/team/'+teamFile['filename']
-
-		                const team = new Team({
-							caption, text, image: teamFile['filename']
-						})
-
-						team.save()
-
-						move(oldPath, newPath, (error) => {
-							if (error){
-					        	// return err 
-					        	clearTemp()
-					            return res.status(400).json({
-									message: error
+						cloudinary.v2.uploader.upload(teamFile.path, function(err, result) {
+						    if (err) {
+						    	return res.status(400).json({
+									message: err.message
 								})
-					        }
-						} )
-						clearTemp()
-		                res.status(201).json({message:'success'})
+						    }
+
+							const team = new Team({
+								caption, text, image: result.secure_url, imageId: result.public_id
+							})
+
+							team.save()
+
+						    res.status(201).json({message:'success'})
+						})
 		            }		            
 
 		        }
@@ -115,15 +127,14 @@ router.get('/:id', async ( req, res ) => {
 })
 
 // api/slider/remove/3
-router.get('/remove/:id/:image', async ( req, res ) => {
+router.get('/remove/:id/:imageId', async ( req, res ) => {
 	try{
 		const team_id = req.params.id
-		const team_image = req.params.image
-		console.log(team_image)
+		const team_image = req.params.imageId
 		await Team.findByIdAndDelete(team_id, function (err, doc) {
-		  fs.unlinkSync('./client/public/uploads/team/'+team_image)
+		  cloudinary.uploader.destroy(team_image, function(result) { console.log(result) })
 		  if (err) return res.status(500).json({ message: err })
-		  res.status(204).json({ message: `slider item ${doc} was removed` })
+		  res.status(204).json({ message: `team item ${doc} was removed` })
 		})
 	} catch(e){
 		res.status(500).json({ message: e })
@@ -131,62 +142,53 @@ router.get('/remove/:id/:image', async ( req, res ) => {
 })
 
 router.post(
-	'/update/:id/:image',
+	'/update/:id/:imageId',
 	async ( req, res ) => {
 		try{
 			upload(req, res, (err) => {				
 		        if (err){
 		        	// return err 
-		        	clearTemp()
+		        	
 		            return res.status(400).json({
 						message: err
 					})
 		        }else{
 		        	const team_id = req.params.id
-					const team_image = req.params.image
+					const team_image = req.params.imageId
 
 		        	const { caption, text } = req.body
 		            	
 					if (caption.length < 5 || text.length < 5 ) {
-						clearTemp()
+						
 					    return res.status(400).json({
 							message: 'text fields minimum length is 5'
 						})
 					}
 
-					let update_data
-
 		            // If file is not selected
 		            if (req.file == undefined) {
-		            	// console.log()
-		            	update_data = {caption: caption, text: text}
+		            	Team.findByIdAndUpdate(team_id, {caption: caption, text: text}, function(err, team){
+			    			if (err) return res.status(500).json({ message: err })
+			    			res.status(200).json({ message: `team item ${team} was updated`, id:team_id, team: team  })
+						})
 		            }else{
 		            	const teamFile = req.file
 
-						const oldPath = teamFile['destination']+'/'+teamFile['filename']
-
-						const newPath = './client/public/uploads/team/'+teamFile['filename']
-
-						move(oldPath, newPath, (error) => {
-							if (error){
-					        	// return err 
-					        	clearTemp()
-					            return res.status(400).json({
-									message: error
+						cloudinary.v2.uploader.upload(teamFile.path, function(err, result) {
+						    if (err) {
+						    	return res.status(400).json({
+									message: err.message
 								})
-					        }else{
-					        	fs.unlinkSync('./client/public/uploads/team/'+team_image)
-					        }
-						} )
+						    }
 
-						update_data = { caption: caption, text: text, image: teamFile['filename'] }
-		            }
+						    cloudinary.uploader.destroy(team_image, function(result) { console.log(result) })
 
-		            Team.findByIdAndUpdate(team_id, update_data, function(err, team){
-		            	clearTemp()
-			    		if (err) return res.status(500).json({ message: err })
-			    		res.status(200).json({ message: `slider item ${team} was updated`, id:team_id, team: team  })
-					});		            
+						    Team.findByIdAndUpdate(team_id, { caption: caption, text: text, image: result.secure_url, imageId: result.public_id }, function(err, team){
+				    			if (err) return res.status(500).json({ message: err })
+				    			return res.status(200).json({ message: `team item ${team} was updated`, id:team_id, team: team  })
+							})
+						})
+		            }	            
 		        }
 		    })
 		} catch(e){
@@ -213,22 +215,5 @@ function sanitizeFile(file, cb) {
         cb('Error: File type not allowed!')
     }
 }
-
-function clearTemp() {
-	const path = require('path');
-
-	const directory = './client/public/uploads/temp';
-
-	fs.readdir(directory, (err, files) => {
-	  if (err) throw err;
-
-	  for (const file of files) {
-	    fs.unlink(path.join(directory, file), err => {
-	      if (err) throw err;
-	    });
-	  }
-	});
-}
-
 
 module.exports = router

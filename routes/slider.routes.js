@@ -4,32 +4,53 @@ const multer  = require('multer')
 const {check, body, validationResult} = require('express-validator')
 const Slider = require('../models/Slider')
 const router = Router()
-const move = require('../filemove');
+// const move = require('../filemove');
 
-const fs = require('fs');
+// const fs = require('fs');
 
-// Set storage engine
+// // Set storage engine
+// const storage = multer.diskStorage({
+//     destination: './client/public/uploads/temp',
+//     filename: function (req, file, cb) {        
+//         // null as first argument means no error
+//         const path = require('path')
+// 	    cb(null, Date.now() + path.extname(file.originalname) )
+//     }
+// })
+
+// // Init upload
+// const upload = multer({
+//     storage: storage, 
+//     limits: {
+//         fileSize: 2500000
+//     },
+
+//     fileFilter: function (req, file, cb) {
+//         sanitizeFile(file, cb);
+//     }
+
+// }).single('image')
+
+
+//IMAGE UPLOAD CONFIGURATION
+
 const storage = multer.diskStorage({
-    destination: './client/public/uploads/temp',
-    filename: function (req, file, cb) {        
-        // null as first argument means no error
-        const path = require('path')
-	    cb(null, Date.now() + path.extname(file.originalname) )
-    }
-})
+  filename: function(req, file, callback) {
+    callback(null, Date.now() + file.originalname);
+  }
+});
 
-// Init upload
-const upload = multer({
-    storage: storage, 
-    limits: {
-        fileSize: 2500000
-    },
-
-    fileFilter: function (req, file, cb) {
+const upload = multer({ storage: storage, fileFilter: function (req, file, cb) {
         sanitizeFile(file, cb);
-    }
+    } }).single('image');
 
-}).single('image')
+const cloudinary = require("cloudinary");
+
+cloudinary.config({
+  cloud_name: "dpoxszsea",
+  api_key: config.get('CLOUDINARY_API_KEY') || process.env.CLOUDINARY_API_KEY,
+  api_secret: config.get('CLOUDINARY_API_SECRET') || process.env.CLOUDINARY_API_SECRET
+});
 
 // api/slider/add
 router.post(
@@ -39,7 +60,7 @@ router.post(
 			upload(req, res, (err) => {				
 		        if (err){
 		        	// return err 
-		        	clearTemp()
+		        	// clearTemp()
 		            return res.status(400).json({
 						message: err.message
 					})
@@ -56,38 +77,54 @@ router.post(
 
 		            	
 						if (caption.length < 5) {
-							clearTemp()
+							// clearTemp()
 						    return res.status(400).json({
 								message: 'caption minimum length is 5'
 							})
 						}
 
 		            	const sliderFile = req.file
-		                console.log(sliderFile)
-		                console.log('caption inside', caption)
+		            	console.log(sliderFile)
+		               
+						// const oldPath = sliderFile['destination']+'/'+sliderFile['filename']
 
-						const oldPath = sliderFile['destination']+'/'+sliderFile['filename']
+						// const newPath = './client/public/uploads/slider/'+sliderFile['filename']
 
-						const newPath = './client/public/uploads/slider/'+sliderFile['filename']
+		    //             const slider = new Slider({
+						// 	caption, image: sliderFile['filename']
+						// })
 
-		                const slider = new Slider({
-							caption, image: sliderFile['filename']
-						})
+						// slider.save()
 
-						slider.save()
+						// move(oldPath, newPath, (error) => {
+						// 	if (error){
+					 //        	// return err 
+					 //        	clearTemp()
+					 //            return res.status(400).json({
+						// 			message: error
+						// 		})
+					 //        }
+						// } )
+						// console.log(slider._id)
+						// clearTemp()
+		                // res.status(201).json({message:'success'})
 
-						move(oldPath, newPath, (error) => {
-							if (error){
-					        	// return err 
-					        	clearTemp()
-					            return res.status(400).json({
-									message: error
+
+		    			cloudinary.v2.uploader.upload(sliderFile.path, function(err, result) {
+						    if (err) {
+						    	return res.status(400).json({
+									message: err.message
 								})
-					        }
-						} )
-						console.log(slider._id)
-						clearTemp()
-		                res.status(201).json({message:'success'})
+						    }
+
+						    const slider = new Slider({
+								caption, image: result.secure_url, imageId: result.public_id
+							})
+
+							slider.save()
+
+						    res.status(201).json({message:'success'})
+						})
 		            }		            
 
 		        }
@@ -118,13 +155,14 @@ router.get('/:id', async ( req, res ) => {
 })
 
 // api/slider/remove/3
-router.get('/remove/:id/:image', async ( req, res ) => {
+router.get('/remove/:id/:imageId', async ( req, res ) => {
 	try{
 		const slider_id = req.params.id
-		const slider_image = req.params.image
+		const slider_image = req.params.imageId
 		console.log(slider_image)
 		await Slider.findByIdAndDelete(slider_id, function (err, doc) {
-		  fs.unlinkSync('./client/public/uploads/slider/'+slider_image)
+			cloudinary.uploader.destroy(slider_image, function(result) { console.log(result) })
+		  // fs.unlinkSync('./client/public/uploads/slider/'+slider_image)
 		  if (err) return res.status(500).json({ message: err })
 		  res.status(204).json({ message: `slider item ${doc} was removed` })
 		})
@@ -134,62 +172,74 @@ router.get('/remove/:id/:image', async ( req, res ) => {
 })
 
 router.post(
-	'/update/:id/:image',
+	'/update/:id/:imageId',
 	async ( req, res ) => {
 		try{
 			upload(req, res, (err) => {				
 		        if (err){
 		        	// return err 
-		        	clearTemp()
+		        	// clearTemp()
 		            return res.status(400).json({
 						message: err
 					})
 		        }else{
 		        	const slider_id = req.params.id
-					const slider_image = req.params.image
-
+					const slider_image = req.params.imageId
+					console.log(slider_image)
 		        	const { caption } = req.body
 		            	
 					if (caption.length < 5) {
-						clearTemp()
+						// clearTemp()
 					    return res.status(400).json({
 							message: 'caption minimum length is 5'
 						})
 					}
 
-					let update_data
-
-		            // If file is not selected
 		            if (req.file == undefined) {
-		            	// console.log()
-		            	update_data = {caption: caption}
+		            	Slider.findByIdAndUpdate(slider_id, {caption: caption}, function(err, slider){
+			    			if (err) return res.status(500).json({ message: err })
+			    			res.status(200).json({ message: `slider item ${slider} was updated`, id:slider_id, slider: slider  })
+						})
 		            }else{
 		            	const sliderFile = req.file
 
-						const oldPath = sliderFile['destination']+'/'+sliderFile['filename']
+						// const oldPath = sliderFile['destination']+'/'+sliderFile['filename']
 
-						const newPath = './client/public/uploads/slider/'+sliderFile['filename']
+						// const newPath = './client/public/uploads/slider/'+sliderFile['filename']
 
-						move(oldPath, newPath, (error) => {
-							if (error){
-					        	// return err 
-					        	clearTemp()
-					            return res.status(400).json({
-									message: error
+						// move(oldPath, newPath, (error) => {
+						// 	if (error){
+					 //        	// return err 
+					 //        	clearTemp()
+					 //            return res.status(400).json({
+						// 			message: error
+						// 		})
+					 //        }else{
+					 //        	fs.unlinkSync('./client/public/uploads/slider/'+slider_image)
+					 //        }
+						// } )
+
+						cloudinary.v2.uploader.upload(sliderFile.path, function(err, result) {
+						    if (err) {
+						    	return res.status(400).json({
+									message: err.message
 								})
-					        }else{
-					        	fs.unlinkSync('./client/public/uploads/slider/'+slider_image)
-					        }
-						} )
+						    }
 
-						update_data = { caption: caption, image: sliderFile['filename'] }
+						    cloudinary.uploader.destroy(slider_image, function(result) { console.log(result) })
+
+						    Slider.findByIdAndUpdate(slider_id, { caption: caption, image: result.secure_url, imageId: result.public_id }, function(err, slider){
+				    			if (err) return res.status(500).json({ message: err })
+				    			return res.status(200).json({ message: `slider item ${slider} was updated`, id:slider_id, slider: slider  })
+							})
+						})						
 		            }
 
-		            Slider.findByIdAndUpdate(slider_id, update_data, function(err, slider){
-		            	clearTemp()
-			    		if (err) return res.status(500).json({ message: err })
-			    		res.status(200).json({ message: `slider item ${slider} was updated`, id:slider_id, slider: slider  })
-					});		            
+		   //          Slider.findByIdAndUpdate(slider_id, update_data, function(err, slider){
+		   //          	// clearTemp()
+			  //   		if (err) return res.status(500).json({ message: err })
+			  //   		res.status(200).json({ message: `slider item ${slider} was updated`, id:slider_id, slider: slider  })
+					// });		            
 		        }
 		    })
 		} catch(e){
@@ -217,21 +267,21 @@ function sanitizeFile(file, cb) {
     }
 }
 
-function clearTemp() {
-	const path = require('path');
+// function clearTemp() {
+// 	const path = require('path');
 
-	const directory = './client/public/uploads/temp';
+// 	const directory = './client/public/uploads/temp';
 
-	fs.readdir(directory, (err, files) => {
-	  if (err) throw err;
+// 	fs.readdir(directory, (err, files) => {
+// 	  if (err) throw err;
 
-	  for (const file of files) {
-	    fs.unlink(path.join(directory, file), err => {
-	      if (err) throw err;
-	    });
-	  }
-	});
-}
+// 	  for (const file of files) {
+// 	    fs.unlink(path.join(directory, file), err => {
+// 	      if (err) throw err;
+// 	    });
+// 	  }
+// 	});
+// }
 
 
 module.exports = router

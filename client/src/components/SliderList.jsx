@@ -39,7 +39,7 @@ export const SliderList = ({slider, auth}) => {
         		return (
 					<tr key={slider._id}>
 			            <td>
-                    <img src={`/uploads/slider/${slider.image}`} alt="image" style={{width: '150px'}}  />
+                    <img src={slider.image} alt="image" style={{width: '150px'}}  />
                   </td>
 			            <td>{slider.caption}</td>
 			            <td><strong>{new Date(slider.date).toLocaleDateString()}</strong></td>
@@ -47,9 +47,9 @@ export const SliderList = ({slider, auth}) => {
                     <td>
                       <Link to={{
                         pathname: `/admin_edit_slider/${slider._id}`,
-                        state: { image: slider.image, caption: slider.caption }
+                        state: { imageId: slider.imageId, image: slider.image, caption: slider.caption }
                       }} className="btn-floating btn-large waves-effect waves-light blue"> <i className="material-icons">edit</i></Link>
-                      <button onClick={() => deleteHandler(slider._id+'/'+slider.image)} disabled={loading} className="btn-floating btn-large waves-effect waves-light red"><i className="material-icons">delete</i></button>
+                      <button onClick={() => deleteHandler(slider._id+'/'+slider.imageId)} disabled={loading} className="btn-floating btn-large waves-effect waves-light red"><i className="material-icons">delete</i></button>
                     </td>
                   }
 			         </tr>

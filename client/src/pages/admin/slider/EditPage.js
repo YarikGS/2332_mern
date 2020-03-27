@@ -26,7 +26,7 @@ export const AdminSliderEditPage = () => {
 			const form_data = new FormData()
 	   		form_data.append('image', image)
 	   		form_data.append('caption', caption)
-			const data = await request( `/api/slider/update/${itemId}/${itemData.image}`, 'POST', form_data, {'Content-Type': 'multipart/form-data'})
+			const data = await request( `/api/slider/update/${itemId}/${itemData.imageId}`, 'POST', form_data, {'Content-Type': 'multipart/form-data'})
 			history.push(`/admin_slider`)
 		} catch(e) {}
 	}
@@ -40,7 +40,7 @@ export const AdminSliderEditPage = () => {
 				<div className="card blue darken-1">
 			        <div className="card-content white-text">
 			        	<span className="card-title">Edit Slider item</span>
-			        	<img src={`/uploads/slider/${itemData.image}`} alt="image" style={{width: '350px'}}  />
+			        	<img src={itemData.image} alt="image" style={{width: '350px'}}  />
 			        	<div className="row">
 			        		<div className="file-field input-field">
 							    <div className="btn">

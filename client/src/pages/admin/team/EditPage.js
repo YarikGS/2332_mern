@@ -28,7 +28,7 @@ export const AdminTeamEditPage = () => {
 	   		form_data.append('image', image)
 	   		form_data.append('caption', caption)
 	   		form_data.append('text', text)
-			const data = await request( `/api/team/update/${itemId}/${itemData.image}`, 'POST', form_data, {'Content-Type': 'multipart/form-data'})
+			const data = await request( `/api/team/update/${itemId}/${itemData.imageId}`, 'POST', form_data, {'Content-Type': 'multipart/form-data'})
 			history.push(`/admin_team`)
 		} catch(e) {}
 	}
@@ -42,7 +42,7 @@ export const AdminTeamEditPage = () => {
 				<div className="card blue darken-1">
 			        <div className="card-content white-text">
 			        	<span className="card-title">Edit Team Member</span>
-			        	<img src={`/uploads/team/${itemData.image}`} alt="image" style={{width: '350px'}}  />
+			        	<img src={itemData.image} alt="image" style={{width: '350px'}}  />
 			        	<div className="row">
 			        		<div className="file-field input-field">
 							    <div className="btn">
