@@ -73,13 +73,13 @@ router.post(
 						})
 		            }else{
 
-		            	const { caption } = req.body
+		            	const { caption, text } = req.body
 
 		            	
 						if (caption.length < 5) {
 							// clearTemp()
 						    return res.status(400).json({
-								message: 'caption minimum length is 5'
+								message: 'text minimum length is 5'
 							})
 						}
 
@@ -118,7 +118,7 @@ router.post(
 						    }
 
 						    const slider = new Slider({
-								caption, image: result.secure_url, imageId: result.public_id
+								caption, text, image: result.secure_url, imageId: result.public_id
 							})
 
 							slider.save()
@@ -186,17 +186,17 @@ router.post(
 		        	const slider_id = req.params.id
 					const slider_image = req.params.imageId
 					console.log(slider_image)
-		        	const { caption } = req.body
+		        	const { caption, text } = req.body
 		            	
-					if (caption.length < 5) {
+					if ( caption.length < 5 ) {
 						// clearTemp()
 					    return res.status(400).json({
-							message: 'caption minimum length is 5'
+							message: 'caption field minimum length is 5'
 						})
 					}
 
 		            if (req.file == undefined) {
-		            	Slider.findByIdAndUpdate(slider_id, {caption: caption}, function(err, slider){
+		            	Slider.findByIdAndUpdate(slider_id, {caption: caption, text: text}, function(err, slider){
 			    			if (err) return res.status(500).json({ message: err })
 			    			res.status(200).json({ message: `slider item ${slider} was updated`, id:slider_id, slider: slider  })
 						})
@@ -228,7 +228,7 @@ router.post(
 
 						    cloudinary.uploader.destroy(slider_image, function(result) { console.log(result) })
 
-						    Slider.findByIdAndUpdate(slider_id, { caption: caption, image: result.secure_url, imageId: result.public_id }, function(err, slider){
+						    Slider.findByIdAndUpdate(slider_id, { caption: caption, text: text, image: result.secure_url, imageId: result.public_id }, function(err, slider){
 				    			if (err) return res.status(500).json({ message: err })
 				    			return res.status(200).json({ message: `slider item ${slider} was updated`, id:slider_id, slider: slider  })
 							})

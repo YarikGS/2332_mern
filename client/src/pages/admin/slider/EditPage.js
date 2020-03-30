@@ -11,6 +11,7 @@ export const AdminSliderEditPage = () => {
 	const {loading, error, request, clearError} = useHttp()
 	const [image, setImage] = useState(null)
 	const [caption, setCaption] = useState(itemData.caption)
+	const [text, setText] = useState(itemData.text)
 
 	useEffect( () => {
 		message(error)
@@ -26,6 +27,7 @@ export const AdminSliderEditPage = () => {
 			const form_data = new FormData()
 	   		form_data.append('image', image)
 	   		form_data.append('caption', caption)
+	   		form_data.append('text', text)
 			const data = await request( `/api/slider/update/${itemId}/${itemData.imageId}`, 'POST', form_data, {'Content-Type': 'multipart/form-data'})
 			history.push(`/admin_slider`)
 		} catch(e) {}
@@ -54,6 +56,10 @@ export const AdminSliderEditPage = () => {
 					        <div className="input-field">
 					          <input onChange={e => setCaption(e.target.value)} id="caption" type="text" name="caption" defaultValue={itemData.caption} />
 					          <label htmlFor="caption">Caption</label>
+					        </div>
+					        <div className="input-field">
+					          <input onChange={e => setText(e.target.value)} id="text" type="text" name="text" defaultValue={itemData.text} />
+					          <label htmlFor="text">Text</label>
 					        </div>
 				    	</div>
 			        </div>

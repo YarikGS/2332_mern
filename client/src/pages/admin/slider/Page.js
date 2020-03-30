@@ -15,6 +15,7 @@ export const AdminSliderPage = () => {
 	// const {loading, error, request, clearError} = useHttp()
 	const [image, setImage] = useState(null)
 	const [caption, setCaption] = useState('')
+	const [text, setText] = useState('')
 
 	useEffect( () => {
 		message(error)
@@ -30,6 +31,7 @@ export const AdminSliderPage = () => {
 			const form_data = new FormData()
 	   		form_data.append('image', image)
 	   		form_data.append('caption', caption)
+	   		form_data.append('text', text)
 				// console.log('form data b4 send', form_data.get('image'))
 			const data = await request( '/api/slider/add', 'POST', form_data, {'Content-Type': 'multipart/form-data'})
 			fetchSlider()
@@ -78,6 +80,10 @@ export const AdminSliderPage = () => {
 						        <div className="input-field">
 						          <input onChange={e => setCaption(e.target.value)} id="caption" type="text" name="text" />
 						          <label htmlFor="caption">Caption</label>
+						        </div>
+						        <div className="input-field">
+						          <input onChange={e => setText(e.target.value)} id="text" type="text" name="text" />
+						          <label htmlFor="text">Text</label>
 						        </div>
 					    	</div>
 				        </div>

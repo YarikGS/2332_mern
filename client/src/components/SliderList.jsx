@@ -30,6 +30,7 @@ export const SliderList = ({slider, auth}) => {
           <tr>
               <th>slider - img</th>
               <th> slider caption</th>
+              <th> slider text</th>
               <th>slider date</th>
               {auth && <th>slider action</th>}
           </tr>
@@ -42,12 +43,13 @@ export const SliderList = ({slider, auth}) => {
                     <img src={slider.image} alt="image" style={{width: '150px'}}  />
                   </td>
 			            <td>{slider.caption}</td>
+                  <td>{slider.text}</td>
 			            <td><strong>{new Date(slider.date).toLocaleDateString()}</strong></td>
                   {auth && 
                     <td>
                       <Link to={{
                         pathname: `/admin_edit_slider/${slider._id}`,
-                        state: { imageId: slider.imageId, image: slider.image, caption: slider.caption }
+                        state: { imageId: slider.imageId, image: slider.image, caption: slider.caption, text: slider.text }
                       }} className="btn-floating btn-large waves-effect waves-light blue"> <i className="material-icons">edit</i></Link>
                       <button onClick={() => deleteHandler(slider._id+'/'+slider.imageId)} disabled={loading} className="btn-floating btn-large waves-effect waves-light red"><i className="material-icons">delete</i></button>
                     </td>
