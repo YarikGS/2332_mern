@@ -76,15 +76,15 @@ router.post(
 		            	const { caption, text } = req.body
 
 		            	
-						if (caption.length < 5) {
-							// clearTemp()
-						    return res.status(400).json({
-								message: 'text minimum length is 5'
-							})
-						}
+						// if (caption.length < 5) {
+						// 	// clearTemp()
+						//     return res.status(400).json({
+						// 		message: 'text minimum length is 5'
+						// 	})
+						// }
 
 		            	const sliderFile = req.file
-		            	console.log(sliderFile)
+		            	// console.log(sliderFile)
 		               
 						// const oldPath = sliderFile['destination']+'/'+sliderFile['filename']
 
@@ -188,12 +188,12 @@ router.post(
 					console.log(slider_image)
 		        	const { caption, text } = req.body
 		            	
-					if ( caption.length < 5 ) {
-						// clearTemp()
-					    return res.status(400).json({
-							message: 'caption field minimum length is 5'
-						})
-					}
+					// if ( caption.length < 5 ) {
+					// 	// clearTemp()
+					//     return res.status(400).json({
+					// 		message: 'caption field minimum length is 5'
+					// 	})
+					// }
 
 		            if (req.file == undefined) {
 		            	Slider.findByIdAndUpdate(slider_id, {caption: caption, text: text}, function(err, slider){
