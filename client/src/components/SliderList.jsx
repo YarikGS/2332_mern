@@ -1,9 +1,11 @@
-import React, {setState} from 'react'
+import React, {setState, useContext} from 'react'
 import {Link} from 'react-router-dom'
 import {useHttp} from '../hooks/http.hook'
+import {AuthContext} from '../context/AuthContext'
 
 export const SliderList = ({slider, auth}) => {
   const { loading, request } = useHttp()
+  const auth_user = useContext(AuthContext)
 
   let path = ""
   if (auth) {
@@ -17,7 +19,7 @@ export const SliderList = ({slider, auth}) => {
   const deleteHandler = async (passed) => {
     console.log(passed)
     try {
-      const data = request( `/api/slider/remove/${passed}`, 'GET', null)
+      const data = request( `/api/slider/remove/${passed}`, 'GET', null, {'Authorization': `Bearer ${auth_user.token}`})
       window.location.reload(false)
 
     } catch(e) {}

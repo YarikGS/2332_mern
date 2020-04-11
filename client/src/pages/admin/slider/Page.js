@@ -1,15 +1,15 @@
-import React, {useState, useEffect, useCallback} from 'react'
+import React, {useState, useEffect, useCallback, useContext} from 'react'
 import {useHttp} from '../../../hooks/http.hook'
 import {Loader} from '../../../components/Loader'
 import {SliderList} from '../../../components/SliderList'
-
+import {AuthContext} from '../../../context/AuthContext'
 import {useMessage} from '../../../hooks/message.hook'
 import {useHistory} from 'react-router-dom'
 
 export const AdminSliderPage = () => {
 	const [slider, setSlider] = useState([])
 	const {loading, error, request, clearError} = useHttp()
-
+	const auth = useContext(AuthContext)
 	const history = useHistory()
 	const message = useMessage()
 	// const {loading, error, request, clearError} = useHttp()
@@ -33,12 +33,11 @@ export const AdminSliderPage = () => {
 	   		form_data.append('caption', caption)
 	   		form_data.append('text', text)
 				// console.log('form data b4 send', form_data.get('image'))
-			const data = await request( '/api/slider/add', 'POST', form_data, {'Content-Type': 'multipart/form-data'})
+			const data = await request( '/api/slider/add', 'POST', form_data, {'Content-Type': 'multipart/form-data',
+		 'Authorization': `Bearer ${auth.token}` })
 			fetchSlider()
 		} catch(e) {}
 	}
-
-	const auth = "auth"
 
 
 	const fetchSlider = useCallback( async () => {
@@ -95,7 +94,7 @@ export const AdminSliderPage = () => {
 				</div>
 			</div>
 
-			{ !loading && slider && <SliderList slider={slider} auth={auth} /> }
+			{ !loading && slider && <SliderList slider={slider} auth='auth' /> }
 		</>
 	)
 }

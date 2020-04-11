@@ -1,7 +1,8 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useContext} from 'react'
 import {useHttp} from '../../../hooks/http.hook'
 import {useMessage} from '../../../hooks/message.hook'
 import {useHistory, useParams, useLocation} from 'react-router-dom'
+import {AuthContext} from '../../../context/AuthContext'
 
 export const AdminGalleryEditPage = () => {
 	const itemId = useParams().id
@@ -10,7 +11,9 @@ export const AdminGalleryEditPage = () => {
 	const message = useMessage()
 	const {loading, error, request, clearError} = useHttp()
 	const [url, setUrl] = useState(itemData.url)
+	const [category, setCategory] = useState(itemData.category)
 	const [caption, setCaption] = useState(itemData.caption)
+	const auth = useContext(AuthContext)
 
 	useEffect( () => {
 		message(error)
@@ -23,7 +26,7 @@ export const AdminGalleryEditPage = () => {
 
 	const editHandler = async () => {
 		try {
-			const data = await request( `/api/gallery/update/${itemId}`, 'POST', {url, caption})
+			const data = await request( `/api/gallery/update/${itemId}`, 'POST', {url, caption, category}, {'Authorization': `Bearer ${auth.token}`})
 			console.log(data)
 			history.push(`/admin_gallery/${data.gallery._id}`)
 		} catch(e) {}
@@ -46,6 +49,10 @@ export const AdminGalleryEditPage = () => {
 					        <div className="input-field">
 					          <input onChange={e => setCaption(e.target.value)} id="caption" type="text" name="caption" defaultValue={itemData.caption} />
 					          <label htmlFor="caption">Caption</label>
+					        </div>
+					        <div className="input-field">
+					          <input onChange={e => setCategory(e.target.value)} id="category" type="text" name="category" defaultValue={itemData.caption} />
+					          <label htmlFor="category">Category</label>
 					        </div>
 				    	</div>
 			        </div>

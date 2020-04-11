@@ -3,6 +3,7 @@ const config = require('config')
 const multer  = require('multer')
 const {check, body, validationResult} = require('express-validator')
 const Team = require('../models/Team')
+const auth = require('../middleware/auth.middleware')
 const router = Router()
 // const move = require('../filemove');
 
@@ -52,7 +53,7 @@ cloudinary.config({
 
 // api/team/add
 router.post(
-	'/add',
+	'/add', auth,
 	async ( req, res ) => {
 		try{
 			upload(req, res, (err) => {				
@@ -70,7 +71,7 @@ router.post(
 						})
 		            }else{
 
-		            	const { caption, text } = req.body
+		            	const { caption, text, instagram } = req.body
 
 		            	
 						if (caption.length < 5 || text.length < 5 ) {
@@ -90,7 +91,7 @@ router.post(
 						    }
 
 							const team = new Team({
-								caption, text, image: result.secure_url, imageId: result.public_id
+								caption, text, image: result.secure_url, imageId: result.public_id, instagram
 							})
 
 							team.save()
@@ -127,7 +128,7 @@ router.get('/:id', async ( req, res ) => {
 })
 
 // api/slider/remove/3
-router.get('/remove/:id/:imageId', async ( req, res ) => {
+router.get('/remove/:id/:imageId', auth, async ( req, res ) => {
 	try{
 		const team_id = req.params.id
 		const team_image = req.params.imageId
@@ -142,7 +143,7 @@ router.get('/remove/:id/:imageId', async ( req, res ) => {
 })
 
 router.post(
-	'/update/:id/:imageId',
+	'/update/:id/:imageId', auth,
 	async ( req, res ) => {
 		try{
 			upload(req, res, (err) => {				
@@ -156,7 +157,7 @@ router.post(
 		        	const team_id = req.params.id
 					const team_image = req.params.imageId
 
-		        	const { caption, text } = req.body
+		        	const { caption, text, instagram } = req.body
 		            	
 					if (caption.length < 5 || text.length < 5 ) {
 						
@@ -167,7 +168,7 @@ router.post(
 
 		            // If file is not selected
 		            if (req.file == undefined) {
-		            	Team.findByIdAndUpdate(team_id, {caption: caption, text: text}, function(err, team){
+		            	Team.findByIdAndUpdate(team_id, {caption: caption, text: text, instagram: instagram}, function(err, team){
 			    			if (err) return res.status(500).json({ message: err })
 			    			res.status(200).json({ message: `team item ${team} was updated`, id:team_id, team: team  })
 						})
@@ -183,7 +184,7 @@ router.post(
 
 						    cloudinary.uploader.destroy(team_image, function(result) { console.log(result) })
 
-						    Team.findByIdAndUpdate(team_id, { caption: caption, text: text, image: result.secure_url, imageId: result.public_id }, function(err, team){
+						    Team.findByIdAndUpdate(team_id, { caption: caption, text: text, image: result.secure_url, imageId: result.public_id, instagram: instagram}, function(err, team){
 				    			if (err) return res.status(500).json({ message: err })
 				    			return res.status(200).json({ message: `team item ${team} was updated`, id:team_id, team: team  })
 							})

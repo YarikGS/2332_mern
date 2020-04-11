@@ -1,20 +1,21 @@
-import React, {useState, useEffect, useCallback} from 'react'
+import React, {useState, useEffect, useCallback, useContext} from 'react'
 import {useHttp} from '../../../hooks/http.hook'
 import {Loader} from '../../../components/Loader'
 import {VideosList} from '../../../components/VideosList'
-
+import {AuthContext} from '../../../context/AuthContext'
 import {useMessage} from '../../../hooks/message.hook'
 import {useHistory} from 'react-router-dom'
 
 export const AdminGalleryPage = () => {
 	const [videos, setVideos] = useState([])
 	const {loading, error, request, clearError} = useHttp()
-
+	const auth = useContext(AuthContext)
 	const history = useHistory()
 	const message = useMessage()
 	// const {loading, error, request, clearError} = useHttp()
 	const [url, setUrl] = useState('')
 	const [caption, setCaption] = useState('')
+	const [category, setCategory] = useState('')
 
 	useEffect( () => {
 		message(error)
@@ -27,15 +28,12 @@ export const AdminGalleryPage = () => {
 
 	const createHandler = async () => {
 		try {
-			const data = await request( '/api/gallery/add', 'POST', {url, caption})
+			const data = await request( '/api/gallery/add', 'POST', {url, caption, category}, {'Authorization': `Bearer ${auth.token}`})
 			console.log(data)
 			fetchVideos()
 			// history.push(`/admin_gallery/${data.gallery._id}`)
 		} catch(e) {}
 	}
-
-	const auth = "auth"
-
 
 	const fetchVideos = useCallback( async () => {
 		try {
@@ -72,6 +70,10 @@ export const AdminGalleryPage = () => {
 						          <input onChange={e => setCaption(e.target.value)} id="caption" type="text" name="text" />
 						          <label htmlFor="caption">Caption</label>
 						        </div>
+						        <div className="input-field">
+						          <input onChange={e => setCategory(e.target.value)} id="category" type="text" name="text" />
+						          <label htmlFor="category">Category</label>
+						        </div>
 					    	</div>
 				        </div>
 				        <div className="card-action">
@@ -82,7 +84,7 @@ export const AdminGalleryPage = () => {
 				</div>
 			</div>
 
-			{ !loading && videos && <VideosList videos={videos} auth={auth} /> }
+			{ !loading && videos && <VideosList videos={videos} auth='auth' /> }
 		</>
 	)
 }

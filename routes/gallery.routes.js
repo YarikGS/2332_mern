@@ -2,14 +2,15 @@ const {Router} = require('express')
 const config = require('config')
 const {check, validationResult} = require('express-validator')
 const Gallery = require('../models/Gallery')
+const auth = require('../middleware/auth.middleware')
 const router = Router()
 
 // api/gallery/add
 router.post(
-	'/add',
+	'/add', auth,
 	[
 		check('url', 'URL is invalid').isURL(),
-		check('caption', 'caption minimum length is 5').isLength({ min: 5 })
+		check('caption', 'caption minimum length is 5').isLength({ min: 5 }),
 	],
 	async ( req, res ) => {
 		try{
@@ -22,10 +23,10 @@ router.post(
 					message: 'error'
 				})
 			}
-			const { url, caption } = req.body
+			const { url, caption, category } = req.body
 
 			const gallery = new Gallery({
-				url, caption
+				url, caption, category
 			})
 
 			await gallery.save()
@@ -39,7 +40,36 @@ router.post(
 router.get('/', async ( req, res ) => {
 	try{
 		const gallery = await Gallery.find()
-		res.json(gallery)
+		// res.json(gallery)
+		const request = require('request');
+
+		const functionWithPromise = item => { //a function that returns a promise
+		  return new Promise(function(resolve, reject) {
+			request(`https://vimeo.com/api/oembed.json?url=${item.url}`, { json: true }, (err, res, body) => {
+			  if (err) { return reject(err); }
+			  let new_item = item.toObject();
+				new_item.vimeo_response = body;
+				console.log(new_item);
+				resolve( new_item )
+			});
+
+		  });
+		}
+
+		const anAsyncFunction = async item => {
+		  return functionWithPromise(item)
+		}
+
+		const getData = async () => {
+		  return Promise.all(gallery.map(item => anAsyncFunction(item)))
+		}
+
+		getData().then(new_gallery => {
+			// console.log(new_gallery)
+		  res.json(new_gallery)
+		})
+
+
 	} catch(e){
 		res.status(500).json({ message: 'gallery action get all error' })
 	}
@@ -55,7 +85,7 @@ router.get('/:id', async ( req, res ) => {
 })
 
 // api/gallery/remove/3
-router.get('/remove/:id', async ( req, res ) => {
+router.get('/remove/:id', auth, async ( req, res ) => {
 	try{
 		const gallery_id = req.params.id
 		// await Gallery.remove({id:gallery_id})
@@ -70,7 +100,7 @@ router.get('/remove/:id', async ( req, res ) => {
 
 // api/gallery/update/3
 router.post(
-	'/update/:id',
+	'/update/:id', auth,
 	[
 		check('url', 'URL is invalid').isURL(),
 		check('caption', 'caption minimum length is 10').isLength({ min: 5 })
@@ -89,9 +119,9 @@ router.post(
 
 
 			const gallery_id = req.params.id
-			const { url, caption } = req.body
+			const { url, caption, category } = req.body
 
-			await Gallery.findByIdAndUpdate(gallery_id, {url: url, caption: caption}, function(err, gallery){
+			await Gallery.findByIdAndUpdate(gallery_id, {url: url, caption: caption, category: category}, function(err, gallery){
 			    if (err) return res.status(500).json({ message: err })
 			    res.status(200).json({ message: `gallery item ${gallery} was updated`, id:gallery_id, gallery: gallery  })
 			});

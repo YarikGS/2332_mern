@@ -1,8 +1,8 @@
-import React, {useState, useEffect, useCallback} from 'react'
+import React, {useState, useEffect, useCallback, useContext} from 'react'
 import {useHttp} from '../../../hooks/http.hook'
 import {Loader} from '../../../components/Loader'
 import {TeamList} from '../../../components/TeamList'
-
+import {AuthContext} from '../../../context/AuthContext'
 import {useMessage} from '../../../hooks/message.hook'
 import {useHistory} from 'react-router-dom'
 
@@ -16,6 +16,8 @@ export const AdminTeamPage = () => {
 	const [image, setImage] = useState(null)
 	const [caption, setCaption] = useState('')
 	const [text, setText] = useState('')
+	const [instagram, setInstagram] = useState('')
+	const auth = useContext(AuthContext)
 
 	useEffect( () => {
 		message(error)
@@ -33,12 +35,10 @@ export const AdminTeamPage = () => {
 	   		form_data.append('caption', caption)
 	   		form_data.append('text', text)
 				// console.log('form data b4 send', form_data.get('image'))
-			const data = await request( '/api/team/add', 'POST', form_data, {'Content-Type': 'multipart/form-data'})
+			const data = await request( '/api/team/add', 'POST', form_data, {'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${auth.token}`})
 			fetchTeam()
 		} catch(e) {}
 	}
-
-	const auth = "auth"
 
 
 	const fetchTeam = useCallback( async () => {
@@ -85,6 +85,10 @@ export const AdminTeamPage = () => {
 						          <input onChange={e => setText(e.target.value)} id="text" type="text" name="text" />
 						          <label htmlFor="text">Text</label>
 						        </div>
+						        <div className="input-field">
+						          <input onChange={e => setInstagram(e.target.value)} id="instagram" type="text" name="instagram" />
+						          <label htmlFor="instagram">Instagram</label>
+						        </div>
 					    	</div>
 				        </div>
 				        <div className="card-action">
@@ -95,7 +99,7 @@ export const AdminTeamPage = () => {
 				</div>
 			</div>
 
-			{ !loading && team && <TeamList team={team} auth={auth} /> }
+			{ !loading && team && <TeamList team={team} auth='auth' /> }
 		</>
 	)
 }

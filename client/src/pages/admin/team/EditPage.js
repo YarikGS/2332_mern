@@ -1,7 +1,9 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useContext} from 'react'
 import {useHttp} from '../../../hooks/http.hook'
 import {useMessage} from '../../../hooks/message.hook'
 import {useHistory, useParams, useLocation} from 'react-router-dom'
+import {AuthContext} from '../../../context/AuthContext'
+
 
 export const AdminTeamEditPage = () => {
 	const itemId = useParams().id
@@ -12,6 +14,8 @@ export const AdminTeamEditPage = () => {
 	const [image, setImage] = useState(null)
 	const [caption, setCaption] = useState(itemData.caption)
 	const [text, setText] = useState(itemData.text)
+	const [instagram, setInstagram] = useState(itemData.instagram)
+	const auth = useContext(AuthContext)
 
 	useEffect( () => {
 		message(error)
@@ -28,7 +32,8 @@ export const AdminTeamEditPage = () => {
 	   		form_data.append('image', image)
 	   		form_data.append('caption', caption)
 	   		form_data.append('text', text)
-			const data = await request( `/api/team/update/${itemId}/${itemData.imageId}`, 'POST', form_data, {'Content-Type': 'multipart/form-data'})
+	   		form_data.append('instagram', instagram)
+			const data = await request( `/api/team/update/${itemId}/${itemData.imageId}`, 'POST', form_data, {'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${auth.token}`})
 			history.push(`/admin_team`)
 		} catch(e) {}
 	}
@@ -61,6 +66,10 @@ export const AdminTeamEditPage = () => {
 					        <div className="input-field">
 					          <input onChange={e => setText(e.target.value)} id="text" type="text" name="text" defaultValue={itemData.text} />
 					          <label htmlFor="text">Text</label>
+					        </div>
+					        <div className="input-field">
+					          <input onChange={e => setInstagram(e.target.value)} id="instagram" type="text" name="instagram" defaultValue={itemData.instagram} />
+					          <label htmlFor="instagram">Instagram</label>
 					        </div>
 				    	</div>
 			        </div>

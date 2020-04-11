@@ -3,6 +3,7 @@ const config = require('config')
 const multer  = require('multer')
 const {check, body, validationResult} = require('express-validator')
 const Slider = require('../models/Slider')
+const auth = require('../middleware/auth.middleware')
 const router = Router()
 // const move = require('../filemove');
 
@@ -54,7 +55,7 @@ cloudinary.config({
 
 // api/slider/add
 router.post(
-	'/add',
+	'/add', auth,
 	async ( req, res ) => {
 		try{
 			upload(req, res, (err) => {				
@@ -155,7 +156,7 @@ router.get('/:id', async ( req, res ) => {
 })
 
 // api/slider/remove/3
-router.get('/remove/:id/:imageId', async ( req, res ) => {
+router.get('/remove/:id/:imageId', auth, async ( req, res ) => {
 	try{
 		const slider_id = req.params.id
 		const slider_image = req.params.imageId
@@ -172,7 +173,7 @@ router.get('/remove/:id/:imageId', async ( req, res ) => {
 })
 
 router.post(
-	'/update/:id/:imageId',
+	'/update/:id/:imageId', auth,
 	async ( req, res ) => {
 		try{
 			upload(req, res, (err) => {				

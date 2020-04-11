@@ -1,6 +1,7 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useContext} from 'react'
 import {useHttp} from '../../../hooks/http.hook'
 import {useMessage} from '../../../hooks/message.hook'
+import {AuthContext} from '../../../context/AuthContext'
 import {useHistory, useParams, useLocation} from 'react-router-dom'
 
 export const AdminSliderEditPage = () => {
@@ -12,6 +13,7 @@ export const AdminSliderEditPage = () => {
 	const [image, setImage] = useState(null)
 	const [caption, setCaption] = useState(itemData.caption)
 	const [text, setText] = useState(itemData.text)
+	const auth = useContext(AuthContext)
 
 	useEffect( () => {
 		message(error)
@@ -28,7 +30,8 @@ export const AdminSliderEditPage = () => {
 	   		form_data.append('image', image)
 	   		form_data.append('caption', caption)
 	   		form_data.append('text', text)
-			const data = await request( `/api/slider/update/${itemId}/${itemData.imageId}`, 'POST', form_data, {'Content-Type': 'multipart/form-data'})
+			const data = await request( `/api/slider/update/${itemId}/${itemData.imageId}`, 'POST', form_data, {'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${auth.token}`}
+				)
 			history.push(`/admin_slider`)
 		} catch(e) {}
 	}
