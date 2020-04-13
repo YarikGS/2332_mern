@@ -4,7 +4,7 @@ import {Loader} from '../../../components/Loader'
 import {VideosList} from '../../../components/VideosList'
 import {AuthContext} from '../../../context/AuthContext'
 import {useMessage} from '../../../hooks/message.hook'
-import {useHistory} from 'react-router-dom'
+import {useHistory, useLocation} from 'react-router-dom'
 
 export const AdminGalleryPage = () => {
 	const [videos, setVideos] = useState([])
@@ -12,10 +12,21 @@ export const AdminGalleryPage = () => {
 	const auth = useContext(AuthContext)
 	const history = useHistory()
 	const message = useMessage()
+	const itemData = useLocation().state
 	// const {loading, error, request, clearError} = useHttp()
 	const [url, setUrl] = useState('')
 	const [caption, setCaption] = useState('')
 	const [category, setCategory] = useState('')
+	const [type, setType] = useState('gallery')
+
+	let load_category = ''
+	
+	console.log(`category to load is`)
+	if ( itemData !== null ) {
+		console.log(`category to load ${itemData.category}`)
+		load_category = `?category=${itemData.category}`
+
+	}
 
 	useEffect( () => {
 		message(error)
@@ -28,7 +39,7 @@ export const AdminGalleryPage = () => {
 
 	const createHandler = async () => {
 		try {
-			const data = await request( '/api/gallery/add', 'POST', {url, caption, category}, {'Authorization': `Bearer ${auth.token}`})
+			const data = await request( '/api/gallery/add', 'POST', {url, caption, category, type}, {'Authorization': `Bearer ${auth.token}`})
 			console.log(data)
 			fetchVideos()
 			// history.push(`/admin_gallery/${data.gallery._id}`)
@@ -37,7 +48,7 @@ export const AdminGalleryPage = () => {
 
 	const fetchVideos = useCallback( async () => {
 		try {
-			const fetched = await request('api/gallery/', 'GET', null)
+			const fetched = await request(`api/gallery/all/gallery${load_category}`, 'GET', null)
 
 			setVideos(fetched)
 		} catch(e) {}
@@ -62,6 +73,7 @@ export const AdminGalleryPage = () => {
 				        <div className="card-content white-text">
 				        	<span className="card-title">Add new Vimeo Video</span>
 				        	<div className="row">
+				        		
 						        <div className="input-field">
 						          <input onChange={e => setUrl(e.target.value)} id="url" type="text" name="url" />
 						          <label htmlFor="url">Vimeo url</label>

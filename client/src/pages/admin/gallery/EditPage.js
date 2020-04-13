@@ -13,6 +13,7 @@ export const AdminGalleryEditPage = () => {
 	const [url, setUrl] = useState(itemData.url)
 	const [category, setCategory] = useState(itemData.category)
 	const [caption, setCaption] = useState(itemData.caption)
+	const [type, setType] = useState('contacts')
 	const auth = useContext(AuthContext)
 
 	useEffect( () => {
@@ -26,7 +27,7 @@ export const AdminGalleryEditPage = () => {
 
 	const editHandler = async () => {
 		try {
-			const data = await request( `/api/gallery/update/${itemId}`, 'POST', {url, caption, category}, {'Authorization': `Bearer ${auth.token}`})
+			const data = await request( `/api/gallery/update/${itemId}`, 'POST', {url, caption, category, type}, {'Authorization': `Bearer ${auth.token}`})
 			console.log(data)
 			history.push(`/admin_gallery/${data.gallery._id}`)
 		} catch(e) {}
@@ -51,7 +52,7 @@ export const AdminGalleryEditPage = () => {
 					          <label htmlFor="caption">Caption</label>
 					        </div>
 					        <div className="input-field">
-					          <input onChange={e => setCategory(e.target.value)} id="category" type="text" name="category" defaultValue={itemData.caption} />
+					          <input onChange={e => setCategory(e.target.value)} id="category" type="text" name="category" defaultValue={itemData.category} />
 					          <label htmlFor="category">Category</label>
 					        </div>
 				    	</div>

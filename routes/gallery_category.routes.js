@@ -1,16 +1,20 @@
 const {Router} = require('express')
 const config = require('config')
-const {check, validationResult} = require('express-validator')
+const {check, validationResult, oneOf} = require('express-validator')
 const Gallery_category = require('../models/Gallery_category')
 const auth = require('../middleware/auth.middleware')
 const router = Router()
 
-// api/gallery_categories/add
+// api/gallery_category/add
 router.post(
 	'/add', auth,
 	[
 		check('url', 'URL is invalid').isURL(),
 		check('caption', 'caption minimum length is 5').isLength({ min: 5 }),
+		oneOf([
+	       check('type').equals('gallery'),
+	       check('type').equals('contacts'),
+	    ], 'incorrect type of category'),
 	],
 	async ( req, res ) => {
 		try{
@@ -36,7 +40,7 @@ router.post(
 			res.status(500).json({ message: 'gallery category action add error' })
 		}
 })
-// api/gallery_categories/
+// api/gallery_category/
 router.get('/', async ( req, res ) => {
 	try{
 		const gallery_categories = await Gallery_category.find()
@@ -46,7 +50,7 @@ router.get('/', async ( req, res ) => {
 	}
 })
 
-// api/gallery_categories/remove/3
+// api/gallery_category/remove/3
 router.get('/remove/:id', auth, async ( req, res ) => {
 	try{
 		const gallery_category_id = req.params.id
@@ -60,12 +64,16 @@ router.get('/remove/:id', auth, async ( req, res ) => {
 	}
 })
 
-// api/gallery_categories/update/3
+// api/gallery_category/update/3
 router.post(
 	'/update/:id', auth,
 	[
 		check('url', 'URL is invalid').isURL(),
-		check('caption', 'caption minimum length is 10').isLength({ min: 5 })
+		check('caption', 'caption minimum length is 10').isLength({ min: 5 }),
+		oneOf([
+	       check('type').equals('gallery'),
+	       check('type').equals('contacts'),
+	    ], 'incorrect type of category'),
 	],
 	async ( req, res ) => {
 		try{
