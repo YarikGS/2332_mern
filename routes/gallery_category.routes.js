@@ -41,13 +41,18 @@ router.post(
 		}
 })
 // api/gallery_category/
-router.get('/', async ( req, res ) => {
-	try{
-		const gallery_categories = await Gallery_category.find()
-		res.json(gallery_categories)
-	} catch(e){
-		res.status(500).json({ message: 'gallery categories action get all error' })
-	}
+router.get('/all/:type',
+	oneOf([
+	       check('type').equals('gallery'),
+	       check('type').equals('contacts'),
+	    ], 'incorrect type of category'),
+	async ( req, res ) => {
+		try{
+			const gallery_categories = await Gallery_category.find({ type: req.params.type })
+			res.json(gallery_categories)
+		} catch(e){
+			res.status(500).json({ message: 'gallery categories action get all error' })
+		}
 })
 
 // api/gallery_category/remove/3
