@@ -35,7 +35,7 @@ router.post(
 
 			await gallery.save()
 
-			res.status(201).json({gallery})
+			res.status(201).json({gallery: gallery, status: 200})
 		} catch(e){
 			res.status(500).json({ message: 'gallery action add error' })
 		}
@@ -115,7 +115,7 @@ router.get('/remove/:id', auth, async ( req, res ) => {
 		// await Gallery.remove({id:gallery_id})
 		await Gallery.findByIdAndDelete(gallery_id, function (err, doc) {
 		  if (err) return res.status(500).json({ message: err })
-		  res.status(204).json({ message: `gallery item ${doc} was removed` })
+		  res.status(204).json({ message: `gallery item ${doc} was removed`, status: 200 })
 		})
 	} catch(e){
 		res.status(500).json({ message: e })
@@ -150,7 +150,7 @@ router.post(
 
 			await Gallery.findByIdAndUpdate(gallery_id, { url: url, caption: caption, category: category, type: type }, function(err, gallery){
 			    if (err) return res.status(500).json({ message: err })
-			    res.status(200).json({ message: `gallery item ${gallery} was updated`, id:gallery_id, gallery: gallery, status: '200'  })
+			    res.status(200).json({ message: `gallery item ${gallery} was updated`, id:gallery_id, gallery: gallery, status: 200  })
 			});
 		} catch(e){
 			res.status(500).json({ message: e })
