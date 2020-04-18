@@ -145,13 +145,12 @@ router.post(
 				})
 			}
 
-
 			const gallery_id = req.params.id
 			const { url, caption, category, type } = req.body
 
 			await Gallery.findByIdAndUpdate(gallery_id, { url: url, caption: caption, category: category, type: type }, function(err, gallery){
 			    if (err) return res.status(500).json({ message: err })
-			    res.status(200).json({ message: `gallery item ${gallery} was updated`, id:gallery_id, gallery: gallery  })
+			    res.status(200).json({ message: `gallery item ${gallery} was updated`, id:gallery_id, gallery: gallery, status: '200'  })
 			});
 		} catch(e){
 			res.status(500).json({ message: e })
