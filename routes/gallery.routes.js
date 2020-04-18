@@ -116,7 +116,7 @@ router.get('/remove/:id', //auth,
 		// await Gallery.remove({id:gallery_id})
 		await Gallery.findByIdAndDelete(gallery_id, function (err, doc) {
 		  if (err) return res.status(500).json({ message: err })
-		  res.status(204).json({ message: `gallery item ${doc} was removed`, status: 204 })
+		  res.status(200).json({ message: `gallery item ${doc} was removed`, status: 200 })
 		})
 	} catch(e){
 		res.status(500).json({ message: e })
