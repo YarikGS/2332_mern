@@ -7,7 +7,7 @@ const router = Router()
 
 // api/gallery/add
 router.post(
-	'/add', auth,
+	'/add', //auth,
 	[
 		check('url', 'URL is invalid').isURL(),
 		check('caption', 'caption minimum length is 5').isLength({ min: 5 }),
@@ -124,7 +124,7 @@ router.get('/remove/:id', auth, async ( req, res ) => {
 
 // api/gallery/update/3
 router.post(
-	'/update/:id', auth,
+	'/update/:id', //auth,
 	[
 		check('url', 'URL is invalid').isURL(),
 		check('caption', 'caption minimum length is 5').isLength({ min: 5 }),
