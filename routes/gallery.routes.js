@@ -109,7 +109,8 @@ router.get('/:id', async ( req, res ) => {
 })
 
 // api/gallery/remove/3
-router.get('/remove/:id', auth, async ( req, res ) => {
+router.get('/remove/:id', //auth, 
+	async ( req, res ) => {
 	try{
 		const gallery_id = req.params.id
 		// await Gallery.remove({id:gallery_id})
