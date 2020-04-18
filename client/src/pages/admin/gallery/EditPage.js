@@ -13,7 +13,7 @@ export const AdminGalleryEditPage = () => {
 	const [url, setUrl] = useState(itemData.url)
 	const [category, setCategory] = useState(itemData.category)
 	const [caption, setCaption] = useState(itemData.caption)
-	const [type, setType] = useState('contacts')
+	const [type, setType] = useState('gallery')
 	const auth = useContext(AuthContext)
 
 	useEffect( () => {
