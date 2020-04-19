@@ -34,7 +34,7 @@ router.post(
 			request(`https://vimeo.com/api/oembed.json?url=${url}`, { json: true }, (err, res, body) => {
 				  // if (err) { return reject(err); }
 				  if (err) { return res.status(400).json({
-					status: 400,
+					status: 404,
 					message: err
 				}) }
 				   
@@ -165,7 +165,7 @@ router.post(
 			request(`https://vimeo.com/api/oembed.json?url=${url}`, { json: true }, (err, res, body) => {
 				  // if (err) { return reject(err); }
 				  if (err) { return res.status(400).json({
-					status: 400,
+					status: 404,
 					message: err
 				}) }
 				   
