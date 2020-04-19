@@ -29,6 +29,17 @@ router.post(
 			}
 			const { url, caption, category, type } = req.body
 
+			const request = require('request');
+
+			request(`https://vimeo.com/api/oembed.json?url=${url}`, { json: true }, (err, res, body) => {
+				  // if (err) { return reject(err); }
+				  if (err) { return res.status(400).json({
+					status: 400,
+					message: err
+				}) }
+				   
+			});
+
 			const gallery = new Gallery({
 				url, caption, category, type
 			})
@@ -57,7 +68,7 @@ router.get('/all/:type',
 			if ( gallery_category !== undefined && gallery_category.length ) {
 				search.category = gallery_category
 			}
-
+		
 			// console.log(gallery_type)
 			// console.log(gallery_category.length)
 			console.log(search)
@@ -148,6 +159,17 @@ router.post(
 
 			const gallery_id = req.params.id
 			const { url, caption, category, type } = req.body
+
+			const request = require('request');
+
+			request(`https://vimeo.com/api/oembed.json?url=${url}`, { json: true }, (err, res, body) => {
+				  // if (err) { return reject(err); }
+				  if (err) { return res.status(400).json({
+					status: 400,
+					message: err
+				}) }
+				   
+			});
 
 			await Gallery.findByIdAndUpdate(gallery_id, { url: url, caption: caption, category: category, type: type }, function(err, gallery){
 			    if (err) return res.status(500).json({ message: err })
