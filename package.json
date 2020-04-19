@@ -7,10 +7,6 @@
     "start": "node server.js",
   },
 
-  "scriptsComments": {
-    "heroku-postbuild": "cd client && npm install && npm run build"
-  },
-  
   "keywords": [
     "mern",
     "backend"
