@@ -2,6 +2,8 @@ const {Router} = require('express')
 const config = require('config')
 const {check, validationResult, oneOf} = require('express-validator')
 const Gallery_category = require('../models/Gallery_category')
+const Gallery = require('../models/Gallery')
+const Photo = require('../models/Photo')
 const auth = require('../middleware/auth.middleware')
 const router = Router()
 
@@ -9,11 +11,12 @@ const router = Router()
 router.post(
 	'/add', //auth,
 	[
-		check('url', 'URL is invalid').isURL(),
+		check('url', 'URL is invalid').isLength({ min: 5 }),
 		check('caption', 'caption minimum length is 5').isLength({ min: 5 }),
 		oneOf([
 	       check('type').equals('gallery'),
 	       check('type').equals('contacts'),
+	       check('type').equals('photo'),
 	    ], 'incorrect type of category'),
 	],
 	async ( req, res ) => {
@@ -45,6 +48,7 @@ router.get('/all/:type',
 	oneOf([
 	       check('type').equals('gallery'),
 	       check('type').equals('contacts'),
+	       check('type').equals('photo'),
 	    ], 'incorrect type of category'),
 	async ( req, res ) => {
 		try{
@@ -61,8 +65,15 @@ router.get('/remove/:id', //auth,
 	try{
 		const gallery_category_id = req.params.id
 		// await Gallery.remove({id:gallery_id})
+		const gallery_category = await Gallery_category.findById(gallery_category_id)
+
 		await Gallery_category.findByIdAndDelete(gallery_category_id, function (err, doc) {
 		  if (err) return res.status(500).json({ message: err })
+
+		  	Gallery.updateMany({"category": gallery_category.url}, {"$set":{"category": null}});
+
+			Photo.updateMany({"category": gallery_category.url}, {"$set":{"category": null}});
+
 		  res.status(204).json({ message: `gallery category item ${doc} was removed` })
 		})
 	} catch(e){
@@ -74,18 +85,18 @@ router.get('/remove/:id', //auth,
 router.post(
 	'/update/:id', //auth,
 	[
-		check('url', 'URL is invalid').isURL(),
-		check('caption', 'caption minimum length is 10').isLength({ min: 5 }),
+		check('url', 'URL is invalid').isLength({ min: 5 }),
+		check('caption', 'caption minimum length is 5').isLength({ min: 5 }),
 		oneOf([
 	       check('type').equals('gallery'),
 	       check('type').equals('contacts'),
+	       check('type').equals('photo'),
 	    ], 'incorrect type of category'),
 	],
 	async ( req, res ) => {
 		try{
 
 			const errors = validationResult(req)
-
 			if (!errors.isEmpty()) {
 				return res.status(400).json({
 					errors: errors.array(),
@@ -93,12 +104,23 @@ router.post(
 				})
 			}
 
-
 			const gallery_category_id = req.params.id
 			const { url, caption } = req.body
 
-			await Gallery_categories.findByIdAndUpdate(gallery_category_id, {caption: caption, url: url}, function(err, gallery_category){
+			const gallery_category = await Gallery_category.findById(gallery_category_id)
+
+			await Gallery_category.findByIdAndUpdate(gallery_category_id, {caption: caption, url: url}, function(err, gallery_category){
 			    if (err) return res.status(500).json({ message: err })
+
+				console.log(gallery_category.url)
+
+				if ( gallery_category.url !== url ) {
+
+					Gallery.updateMany({"category": gallery_category.url}, {"$set":{"category": url}});
+
+					Photo.updateMany({"category": gallery_category.url}, {"$set":{"category": url}});
+				}
+
 			    res.status(200).json({ message: `gallery category item ${gallery_category} was updated`, id:gallery_category_id, gallery_category: gallery_category  })
 			});
 		} catch(e){
