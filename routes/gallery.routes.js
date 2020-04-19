@@ -31,15 +31,18 @@ router.post(
 
 			const request = require('request');
 
-			request(`https://vimeo.com/api/oembed.json?url=${url}`, { json: true }, (err, result, body) => {
-				  // if (err) { return reject(err); }
-				  console.log(err)
-				  if ( body === '404 Not Found' ) { return res.status(400).json({
+			const vimeo_test = await new Promise(function(resolve, reject) {
+				request(`https://vimeo.com/api/oembed.json?url=${url}`, { json: true }, (err, res, body) => {
+					// console.log(new_item);
+					resolve( body )
+				});
+
+			  });
+			
+			if ( vimeo_test === '404 Not Found' ) { return res.status(400).json({
 					status: 404,
-					message: body
+					message: vimeo_test
 				}) }
-				   
-			});
 
 			const gallery = new Gallery({
 				url, caption, category, type
@@ -78,6 +81,21 @@ router.get('/all/:type',
 			// const gallery = await Gallery.find()
 			// res.json(gallery)
 			const request = require('request');
+			
+			// const new_test =  request(`https://vimeo.com/api/oembed.json?url=https://vimeo.com/372349574`, { json: true }
+				// , (err, result, body) => { return body}
+				  // if (err) { return reject(err); }
+				//   console.log(err)
+				//   if ( body === '404 Not Found' ) { return res.status(400).json({
+				// 	status: 404,
+				// 	message: body
+				// }
+				// ) }
+				   
+			// }
+			// );
+
+			console.log(new_test)
 
 			const functionWithPromise = item => { //a function that returns a promise
 			  return new Promise(function(resolve, reject) {
@@ -163,14 +181,18 @@ router.post(
 
 			const request = require('request');
 
-			await request(`https://vimeo.com/api/oembed.json?url=${url}`, { json: true }, (err, result, body) => {
-				  // if (err) { return reject(err); }
-				  if ( body === '404 Not Found' ) { return res.status(400).json({
+			const vimeo_test = await new Promise(function(resolve, reject) {
+				request(`https://vimeo.com/api/oembed.json?url=${url}`, { json: true }, (err, res, body) => {
+					// console.log(new_item);
+					resolve( body )
+				});
+
+			  });
+			
+			if ( vimeo_test === '404 Not Found' ) { return res.status(400).json({
 					status: 404,
-					message: body
+					message: vimeo_test
 				}) }
-				   
-			});
 
 			await Gallery.findByIdAndUpdate(gallery_id, { url: url, caption: caption, category: category, type: type }, function(err, gallery){
 			    if (err) return res.status(500).json({ message: err })
