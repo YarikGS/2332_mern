@@ -11,7 +11,7 @@ const router = Router()
 router.post(
 	'/add', //auth,
 	[
-		check('url', 'URL is invalid').isLength({ min: 5 }),
+		// check('url', 'URL is invalid').isLength({ min: 5 }),
 		check('caption', 'caption minimum length is 5').isLength({ min: 5 }),
 		oneOf([
 	       check('type').equals('gallery'),
@@ -30,10 +30,12 @@ router.post(
 					message: 'error'
 				})
 			}
-			const { url, caption } = req.body
+			const { 
+				// url, 
+				caption } = req.body
 
 			const gallery_category = new Gallery_category({
-				caption, url
+				caption
 			})
 
 			await gallery_category.save()
@@ -70,9 +72,9 @@ router.get('/remove/:id', //auth,
 		await Gallery_category.findByIdAndDelete(gallery_category_id, function (err, doc) {
 		  if (err) return res.status(500).json({ message: err })
 
-		  	Gallery.updateMany({"category": gallery_category.url}, {"$set":{"category": null}});
+		  	Gallery.updateMany({"category": gallery_category._id}, {"$set":{"category": null}});
 
-			Photo.updateMany({"category": gallery_category.url}, {"$set":{"category": null}});
+			Photo.updateMany({"category": gallery_category._id}, {"$set":{"category": null}});
 
 		  res.status(204).json({ message: `gallery category item ${doc} was removed` })
 		})
@@ -85,7 +87,7 @@ router.get('/remove/:id', //auth,
 router.post(
 	'/update/:id', //auth,
 	[
-		check('url', 'URL is invalid').isLength({ min: 5 }),
+		// check('url', 'URL is invalid').isLength({ min: 5 }),
 		check('caption', 'caption minimum length is 5').isLength({ min: 5 }),
 		oneOf([
 	       check('type').equals('gallery'),
@@ -105,21 +107,23 @@ router.post(
 			}
 
 			const gallery_category_id = req.params.id
-			const { url, caption } = req.body
+			const { 
+				//url,
+				 caption } = req.body
 
 			const gallery_category = await Gallery_category.findById(gallery_category_id)
 
-			await Gallery_category.findByIdAndUpdate(gallery_category_id, {caption: caption, url: url}, function(err, gallery_category){
+			await Gallery_category.findByIdAndUpdate(gallery_category_id, {caption: caption}, function(err, gallery_category){
 			    if (err) return res.status(500).json({ message: err })
 
 				console.log(gallery_category.url)
 
-				if ( gallery_category.url !== url ) {
+				// if ( gallery_category.url !== url ) {
 
-					Gallery.updateMany({"category": gallery_category.url}, {"$set":{"category": url}});
+				// 	Gallery.updateMany({"category": gallery_category._id}, {"$set":{"category": _id}});
 
-					Photo.updateMany({"category": gallery_category.url}, {"$set":{"category": url}});
-				}
+				// 	Photo.updateMany({"category": gallery_category._id}, {"$set":{"category": _id}});
+				// }
 
 			    res.status(200).json({ message: `gallery category item ${gallery_category} was updated`, id:gallery_category_id, gallery_category: gallery_category  })
 			});
