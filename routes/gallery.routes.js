@@ -33,9 +33,10 @@ router.post(
 
 			request(`https://vimeo.com/api/oembed.json?url=${url}`, { json: true }, (err, res, body) => {
 				  // if (err) { return reject(err); }
-				  if (err) { return res.status(400).json({
+				  console.log(err)
+				  if ( body === '404 Not Found' ) { return res.status(400).json({
 					status: 404,
-					message: err
+					message: body
 				}) }
 				   
 			});
@@ -164,9 +165,9 @@ router.post(
 
 			request(`https://vimeo.com/api/oembed.json?url=${url}`, { json: true }, (err, res, body) => {
 				  // if (err) { return reject(err); }
-				  if (err) { return res.status(400).json({
+				  if ( body === '404 Not Found' ) { return res.status(400).json({
 					status: 404,
-					message: err
+					message: body
 				}) }
 				   
 			});
