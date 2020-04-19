@@ -31,7 +31,7 @@ router.post(
 
 			const request = require('request');
 
-			await request(`https://vimeo.com/api/oembed.json?url=${url}`, { json: true }, (err, result, body) => {
+			request(`https://vimeo.com/api/oembed.json?url=${url}`, { json: true }, (err, result, body) => {
 				  // if (err) { return reject(err); }
 				  console.log(err)
 				  if ( body === '404 Not Found' ) { return res.status(400).json({
@@ -47,9 +47,9 @@ router.post(
 
 			await gallery.save()
 
-			res.status(201).json({gallery: gallery, status: 200})
+			return res.status(201).json({gallery: gallery, status: 200})
 		} catch(e){
-			res.status(500).json({ message: 'gallery action add error' })
+			return res.status(500).json({ message: 'gallery action add error' })
 		}
 })
 // api/gallery/
@@ -174,10 +174,10 @@ router.post(
 
 			await Gallery.findByIdAndUpdate(gallery_id, { url: url, caption: caption, category: category, type: type }, function(err, gallery){
 			    if (err) return res.status(500).json({ message: err })
-			    res.status(200).json({ message: `gallery item ${gallery} was updated`, id:gallery_id, gallery: gallery, status: 200  })
+			    return res.status(200).json({ message: `gallery item ${gallery} was updated`, id:gallery_id, gallery: gallery, status: 200  })
 			});
 		} catch(e){
-			res.status(500).json({ message: e })
+			return res.status(500).json({ message: e })
 		}
 	})
 
