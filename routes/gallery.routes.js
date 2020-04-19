@@ -31,15 +31,15 @@ router.post(
 
 			const request = require('request');
 
-			// request(`https://vimeo.com/api/oembed.json?url=${url}`, { json: true }, (err, result, body) => {
-			// 	  // if (err) { return reject(err); }
-			// 	  console.log(err)
-			// 	  if ( body === '404 Not Found' ) { return res.status(400).json({
-			// 		status: 404,
-			// 		message: body
-			// 	}) }
+			await request(`https://vimeo.com/api/oembed.json?url=${url}`, { json: true }, (err, result, body) => {
+				  // if (err) { return reject(err); }
+				  console.log(err)
+				  if ( body === '404 Not Found' ) { return res.status(400).json({
+					status: 404,
+					message: body
+				}) }
 				   
-			// });
+			});
 
 			const gallery = new Gallery({
 				url, caption, category, type
