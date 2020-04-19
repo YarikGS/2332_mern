@@ -77,32 +77,21 @@ router.get('/all/:type',
 			// console.log(gallery_category.length)
 			console.log(search)
 
-			const gallery = await Gallery.find( search )
+			const gallery = await Gallery.find( search ).populate('category', 'caption -_id')
+	
 			// const gallery = await Gallery.find()
 			// res.json(gallery)
 			const request = require('request');
 			
-			// const new_test =  request(`https://vimeo.com/api/oembed.json?url=https://vimeo.com/372349574`, { json: true }
-				// , (err, result, body) => { return body}
-				  // if (err) { return reject(err); }
-				//   console.log(err)
-				//   if ( body === '404 Not Found' ) { return res.status(400).json({
-				// 	status: 404,
-				// 	message: body
-				// }
-				// ) }
-				   
-			// }
-			// );
-
-			// console.log(new_test)
-
 			const functionWithPromise = item => { //a function that returns a promise
 			  return new Promise(function(resolve, reject) {
 				request(`https://vimeo.com/api/oembed.json?url=${item.url}`, { json: true }, (err, res, body) => {
 				  if (err) { return reject(err); }
 				  let new_item = item.toObject();
 					new_item.vimeo_response = body;
+
+					if (item.category !== null ) {new_item.category = item.category.caption}
+					
 					// console.log(new_item);
 					resolve( new_item )
 				});
@@ -119,7 +108,7 @@ router.get('/all/:type',
 			}
 
 			getData().then(new_gallery => {
-				// console.log(new_gallery)
+				console.log(new_gallery)
 			  res.json(new_gallery)
 			})
 
