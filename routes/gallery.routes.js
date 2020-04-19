@@ -163,14 +163,14 @@ router.post(
 
 			const request = require('request');
 
-			// request(`https://vimeo.com/api/oembed.json?url=${url}`, { json: true }, (err, result, body) => {
-			// 	  // if (err) { return reject(err); }
-			// 	  if ( body === '404 Not Found' ) { return res.status(400).json({
-			// 		status: 404,
-			// 		message: body
-			// 	}) }
+			await request(`https://vimeo.com/api/oembed.json?url=${url}`, { json: true }, (err, result, body) => {
+				  // if (err) { return reject(err); }
+				  if ( body === '404 Not Found' ) { return res.status(400).json({
+					status: 404,
+					message: body
+				}) }
 				   
-			// });
+			});
 
 			await Gallery.findByIdAndUpdate(gallery_id, { url: url, caption: caption, category: category, type: type }, function(err, gallery){
 			    if (err) return res.status(500).json({ message: err })
