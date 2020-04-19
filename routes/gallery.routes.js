@@ -95,7 +95,7 @@ router.get('/all/:type',
 			// }
 			// );
 
-			console.log(new_test)
+			// console.log(new_test)
 
 			const functionWithPromise = item => { //a function that returns a promise
 			  return new Promise(function(resolve, reject) {
