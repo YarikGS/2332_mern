@@ -77,7 +77,7 @@ router.get('/all/:type',
 			// console.log(gallery_category.length)
 			console.log(search)
 
-			const gallery = await Gallery.find( search ).populate('category', 'caption -_id')
+			const gallery = await Gallery.find( search ).populate('category', 'caption')
 	
 			// const gallery = await Gallery.find()
 			// res.json(gallery)
@@ -90,7 +90,7 @@ router.get('/all/:type',
 				  let new_item = item.toObject();
 					new_item.vimeo_response = body;
 
-					if (item.category !== null ) {new_item.category = item.category.caption}
+					// if (item.category !== null ) {new_item.category = item.category.caption}
 					
 					// console.log(new_item);
 					resolve( new_item )
