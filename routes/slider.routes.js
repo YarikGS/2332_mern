@@ -256,7 +256,7 @@ function sanitizeFile(file, cb) {
     const path = require('path')
     // Check allowed extensions
     console.log(path.extname(file.originalname))
-    let isAllowedExt = fileExts.includes(path.extname(file.originalname));
+    let isAllowedExt = fileExts.includes(path.extname(file.originalname).toLowerCase());
     // Mime type must be an image
     let isAllowedMimeType = file.mimetype.startsWith("image/")
 
