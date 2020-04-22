@@ -52,7 +52,7 @@ router.post(
 
 			return res.status(201).json({gallery: gallery, status: 200})
 		} catch(e){
-			return res.status(500).json({ message: 'gallery action add error' })
+			return res.status(500).json({ message: e })
 		}
 })
 // api/gallery/
@@ -114,7 +114,7 @@ router.get('/all/:type',
 
 
 		} catch(e){
-			res.status(500).json({ message: 'gallery action get all error' })
+			res.status(500).json({ message: e })
 		}
 })
 // api/gallery/3
@@ -123,7 +123,7 @@ router.get('/:id', async ( req, res ) => {
 		const gallery = await Gallery.findById(req.params.id)
 		res.json(gallery)
 	} catch(e){
-		res.status(500).json({ message: 'gallery action get by id error' })
+		res.status(500).json({ message: e })
 	}
 })
 
@@ -135,7 +135,7 @@ router.get('/remove/:id', //auth,
 		// await Gallery.remove({id:gallery_id})
 		await Gallery.findByIdAndDelete(gallery_id, function (err, doc) {
 		  if (err) return res.status(500).json({ message: err })
-		  res.status(200).json({ message: `gallery item ${doc} was removed`, status: 200 })
+		  res.status(200).json({ message: `success`, status: 200 })
 		})
 	} catch(e){
 		res.status(500).json({ message: e })

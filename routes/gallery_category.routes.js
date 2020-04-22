@@ -42,7 +42,7 @@ router.post(
 
 			res.status(201).json({gallery_category})
 		} catch(e){
-			res.status(500).json({ message: 'gallery category action add error' })
+			res.status(500).json({ message: e })
 		}
 })
 // api/gallery_category/
@@ -57,7 +57,7 @@ router.get('/all/:type',
 			const gallery_categories = await Gallery_category.find({ type: req.params.type })
 			res.json(gallery_categories)
 		} catch(e){
-			res.status(500).json({ message: 'gallery categories action get all error' })
+			res.status(500).json({ message: e })
 		}
 })
 
@@ -76,7 +76,7 @@ router.get('/remove/:id', //auth,
 
 			Photo.updateMany({"category": gallery_category._id}, {"$set":{"category": null}});
 
-		  res.status(204).json({ message: `gallery category item ${doc} was removed` })
+		  res.status(200).json({ message: `success`, status: 200 })
 		})
 	} catch(e){
 		res.status(500).json({ message: e })

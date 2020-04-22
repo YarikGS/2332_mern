@@ -91,7 +91,7 @@ router.get('/:id', async ( req, res ) => {
 		const photo = await Photo.findById(req.params.id)
 		res.json(photo)
 	} catch(e){
-		res.status(500).json({ message: 'photo action get by id error' })
+		res.status(500).json({ message: e })
 	}
 })
 
@@ -106,7 +106,7 @@ router.get('/remove/:id/:imageId', //auth,
 			cloudinary.uploader.destroy(photo_image, function(result) { console.log(result) })
 		  // fs.unlinkSync('./client/public/uploads/photo/'+photo_image)
 		  if (err) return res.status(500).json({ message: err })
-		  res.status(204).json({ message: `photo item ${doc} was removed` })
+		  res.status(200).json({ message: `success`, status: 200 })
 		})
 	} catch(e){
 		res.status(500).json({ message: e })

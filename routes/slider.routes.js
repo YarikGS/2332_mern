@@ -142,7 +142,7 @@ router.get('/', async ( req, res ) => {
 
 		res.json(slider)
 	} catch(e){
-		res.status(500).json({ message: 'slider action get all error' })
+		res.status(500).json({ message: e })
 	}
 })
 // api/slider/3
@@ -151,7 +151,7 @@ router.get('/:id', async ( req, res ) => {
 		const slider = await Slider.findById(req.params.id)
 		res.json(slider)
 	} catch(e){
-		res.status(500).json({ message: 'slider action get by id error' })
+		res.status(500).json({ message: e })
 	}
 })
 
@@ -166,7 +166,7 @@ router.get('/remove/:id/:imageId', //auth,
 			cloudinary.uploader.destroy(slider_image, function(result) { console.log(result) })
 		  // fs.unlinkSync('./client/public/uploads/slider/'+slider_image)
 		  if (err) return res.status(500).json({ message: err })
-		  res.status(204).json({ message: `slider item ${doc} was removed` })
+		  res.status(200).json({ message: `success`, status: 200 })
 		})
 	} catch(e){
 		res.status(500).json({ message: e })

@@ -114,7 +114,7 @@ router.get('/', async ( req, res ) => {
 
 		res.json(team)
 	} catch(e){
-		res.status(500).json({ message: 'team action get all error' })
+		res.status(500).json({ message: e })
 	}
 })
 // api/slider/3
@@ -123,7 +123,7 @@ router.get('/:id', async ( req, res ) => {
 		const team = await Team.findById(req.params.id)
 		res.json(team)
 	} catch(e){
-		res.status(500).json({ message: 'team action get by id error' })
+		res.status(500).json({ message: e })
 	}
 })
 
@@ -136,7 +136,7 @@ router.get('/remove/:id/:imageId', //auth,
 		await Team.findByIdAndDelete(team_id, function (err, doc) {
 		  cloudinary.uploader.destroy(team_image, function(result) { console.log(result) })
 		  if (err) return res.status(500).json({ message: err })
-		  res.status(204).json({ message: `team item ${doc} was removed` })
+		  res.status(200).json({ message: `success`, status: 200 })
 		})
 	} catch(e){
 		res.status(500).json({ message: e })
