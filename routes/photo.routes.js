@@ -130,7 +130,7 @@ router.post(
 					console.log(photo_image)
 		        	const { caption, text, category } = req.body
 
-		            if (req.file == undefined) {
+		            if ( req.file == undefined || req.file == null ) {
 		            	Photo.findByIdAndUpdate(photo_id, {caption: caption, text: text, category: category}, function(err, photo){
 			    			if (err) return res.status(500).json({ message: err })
 			    			res.status(200).json({ message: `photo item ${photo} was updated`, id:photo_id, photo: photo  })

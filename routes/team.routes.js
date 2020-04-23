@@ -168,7 +168,7 @@ router.post(
 					}
 
 		            // If file is not selected
-		            if (req.file == undefined) {
+		            if ( req.file == undefined || req.file == null ) {
 		            	Team.findByIdAndUpdate(team_id, {caption: caption, text: text, instagram: instagram}, function(err, team){
 			    			if (err) return res.status(500).json({ message: err })
 			    			res.status(200).json({ message: `team item ${team} was updated`, id:team_id, team: team  })
