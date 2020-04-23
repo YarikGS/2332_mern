@@ -185,7 +185,7 @@ router.post(
 
 			await Gallery.findByIdAndUpdate(gallery_id, { url: url, caption: caption, category: category, type: type }, function(err, gallery){
 			    if (err) return res.status(500).json({ message: err })
-			    return res.status(200).json({ message: `gallery item ${gallery} was updated`, id:gallery_id, gallery: gallery, status: 200  })
+			    return res.status(200).json({ status: 200 })
 			});
 		} catch(e){
 			return res.status(500).json({ message: e })

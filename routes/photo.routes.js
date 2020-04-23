@@ -149,7 +149,7 @@ router.post(
 
 						    Photo.findByIdAndUpdate(photo_id, { caption: caption, text: text, category: category, image: result.secure_url, imageId: result.public_id }, function(err, photo){
 				    			if (err) return res.status(500).json({ message: err })
-				    			return res.status(200).json({ message: `photo item ${photo} was updated`, id:photo_id, photo: photo  })
+				    			return res.status(200).json({ status: 200 })
 							})
 						})						
 		            }            

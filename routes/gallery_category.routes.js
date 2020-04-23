@@ -125,7 +125,7 @@ router.post(
 				// 	Photo.updateMany({"category": gallery_category._id}, {"$set":{"category": _id}});
 				// }
 
-			    res.status(200).json({ message: `gallery category item ${gallery_category} was updated`, id:gallery_category_id, gallery_category: gallery_category  })
+			    res.status(200).json({ status: 200 })
 			});
 		} catch(e){
 			res.status(500).json({ message: e })

@@ -187,7 +187,7 @@ router.post(
 
 						    Team.findByIdAndUpdate(team_id, { caption: caption, text: text, image: result.secure_url, imageId: result.public_id, instagram: instagram}, function(err, team){
 				    			if (err) return res.status(500).json({ message: err })
-				    			return res.status(200).json({ message: `team item ${team} was updated`, id:team_id, team: team  })
+				    			return res.status(200).json({ status: 200 })
 							})
 						})
 		            }	            
