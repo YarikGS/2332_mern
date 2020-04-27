@@ -39,8 +39,10 @@ app.use(express.json({ extended: true }))
 
 app.use('/api/auth', require('./routes/auth.routes'))
 app.use('/api/gallery', require('./routes/gallery.routes'))
+app.use('/api/gallery_category', require('./routes/gallery_category.routes'))
 app.use('/api/slider', require('./routes/slider.routes'))
 app.use('/api/team', require('./routes/team.routes'))
+app.use('/api/photo', require('./routes/photo.routes'))
 
 
 if (process.env.NODE_ENV === 'production'){

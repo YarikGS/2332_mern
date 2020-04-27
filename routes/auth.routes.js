@@ -48,7 +48,7 @@ router.post(
 			res.status(201).json({message: 'User created'})
 
 		} catch(e){
-			res.status(500).json({ message: 'register error' })
+			res.status(500).json({ message: e })
 		}
 	}
 )
@@ -95,7 +95,7 @@ router.post(
 			res.json({ token, userId: user.id, username:user.username })
 
 		} catch(e){
-			res.status(500).json({ message: 'login error' })
+			res.status(500).json({ message: e })
 		}
 	}
 )
