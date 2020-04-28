@@ -27,7 +27,7 @@ router.post(
 					message: 'error'
 				})
 			}
-			const { url, caption, category, type } = req.body
+			const { url, caption, director, pop, production, category, type } = req.body
 
 			const request = require('request');
 
@@ -45,7 +45,7 @@ router.post(
 				}) }
 
 			const gallery = new Gallery({
-				url, caption, category, type
+				url, caption, director:director, pop:pop, production:production, category, type
 			})
 
 			await gallery.save()
@@ -166,7 +166,7 @@ router.post(
 			}
 
 			const gallery_id = req.params.id
-			const { url, caption, category, type } = req.body
+			const { url, caption, director, pop, production, category, type } = req.body
 
 			const request = require('request');
 
@@ -183,7 +183,7 @@ router.post(
 					message: vimeo_test
 				}) }
 
-			await Gallery.findByIdAndUpdate(gallery_id, { url: url, caption: caption, category: category, type: type }, function(err, gallery){
+			await Gallery.findByIdAndUpdate(gallery_id, { url: url, caption: caption, director:director, pop:pop, production:production, category: category, type: type }, function(err, gallery){
 			    if (err) return res.status(500).json({ message: err })
 			    return res.status(200).json({ status: 200 })
 			});
