@@ -148,7 +148,7 @@ async (req, res) => {
 // let new_item = gallery_data.toObject();
 // console.log(new_item.url)
 
-const request = require('request');
+		const request = require('request');
 
 			const vimeo_test = await new Promise(function(resolve, reject) {
 				request(`https://vimeo.com/api/oembed.json?url=${res.locals.gallery_data.url}`, { json: true }, (err, res, body) => {
@@ -158,18 +158,29 @@ const request = require('request');
 
 			  });
 			
-			if ( vimeo_test === '404 Not Found' ) { return res.status(400).json({
+			if ( vimeo_test === '404 Not Found' ) { 
+				if ( res.locals.gallery_data.imageId != null || res.locals.gallery_data.imageId != undefined ) {
+					cloudinary.uploader.destroy(res.locals.gallery_data.imageId, function(result) { console.log(result) })
+				}
+				return res.status(400).json({
 					status: 404,
 					message: vimeo_test
-				}) }
-					console.log('vimeo')
+				}) 
+			}
+			// console.log('vimeo')
 			const gallery = new Gallery(res.locals.gallery_data)
 
-		            		// console.log(gallery)
+            		// console.log(gallery)
 
-						gallery.save()
+			gallery.save(function(error) {
+			  if (error) {
+			  	if ( res.locals.gallery_data.imageId != null || res.locals.gallery_data.imageId != undefined ) {
+					cloudinary.uploader.destroy(res.locals.gallery_data.imageId, function(result) { console.log(result) })
+				}
+			  }
+			})
 
-						res.status(201).json({message:'success'})
+			res.status(201).json({message:'success'})
 })
 // router.post(
 // 	'/add', //auth,
@@ -297,8 +308,14 @@ router.get('/remove/:id', //auth,
 	async ( req, res ) => {
 	try{
 		const gallery_id = req.params.id
+		const gallery = await Gallery.findById(req.params.id)
+
+
 		// await Gallery.remove({id:gallery_id})
 		await Gallery.findByIdAndDelete(gallery_id, function (err, doc) {
+			if ( gallery.imageId != null || gallery.imageId != undefined ) {
+				cloudinary.uploader.destroy(gallery.imageId, function(result) { console.log(result) })
+			}
 		  if (err) return res.status(500).json({ message: err })
 		  res.status(200).json({ message: `success`, status: 200 })
 		})
