@@ -1,38 +1,157 @@
 const {Router} = require('express')
 const config = require('config')
-const {check, validationResult, oneOf, param} = require('express-validator')
+const {check, validationResult, oneOf, param, body} = require('express-validator')
 const Gallery = require('../models/Gallery')
 const auth = require('../middleware/auth.middleware')
 const router = Router()
+const multer  = require('multer')
+
+//IMAGE UPLOAD CONFIGURATION
+
+const storage = multer.diskStorage({
+  filename: function(req, file, callback) {
+    callback(null, Date.now() + file.originalname);
+  }
+});
+
+const upload = multer({ storage: storage, fileFilter: function (req, file, cb) {
+        sanitizeFile(file, cb);
+    } }).single('image');
+
+const cloudinary = require("cloudinary");
+
+cloudinary.config({
+  cloud_name: "dpoxszsea",
+  api_key: config.get('CLOUDINARY_API_KEY') || process.env.CLOUDINARY_API_KEY,
+  api_secret: config.get('CLOUDINARY_API_SECRET') || process.env.CLOUDINARY_API_SECRET
+});
+
+// const validate = validations => {
+//   return async (req, res, next) => {
+//     await Promise.all(validations.map(validation => validation.run(req)));
+
+//     const errors = validationResult(req);
+//     if (errors.isEmpty()) {
+//       return next();
+//     }
+
+//     res.status(422).json({ errors: errors.array() });
+//   };
+// };
 
 // api/gallery/add
 router.post(
 	'/add', //auth,
-	[
-		check('url', 'URL is invalid').isURL(),
-		check('caption', 'caption minimum length is 5').isLength({ min: 5 }),
-		oneOf([
-	       check('type').equals('gallery'),
-	       check('type').equals('contacts'),
-	    ], 'incorrect type of video'),
-	],
-	async ( req, res ) => {
+	// [
+	// 	check('url', 'URL is invalid').isURL(),
+	// 	check('caption', 'caption minimum length is 5').isLength({ min: 5 }),
+	// 	oneOf([
+	//        check('type').equals('gallery'),
+	//        check('type').equals('contacts'),
+	//     ], 'incorrect type of video'),
+	// ],
+	async ( req, res, next ) => {
 		try{
-			// const baseUrl = config.get('baseUrl')
-			const errors = validationResult(req)
+			upload(req, res, (err) => {				
+		        if (err){
+		        	// return err 
+		        	// clearTemp()
+		            return res.status(400).json({
+						message: err.message
+					})
+		        }else{
+   					
+	            	const { url, caption, director, pop, production, category, type } = req.body
+	            	
+	            	// console.log(req.body)
+					if (caption.length < 5) {
+						// clearTemp()
+					    return res.status(400).json({
+							message: 'caption minimum length is 5'
+						})
+					}
 
-			if (!errors.isEmpty()) {
-				return res.status(400).json({
-					errors: errors.array(),
-					message: 'error'
-				})
-			}
-			const { url, caption, director, pop, production, category, type } = req.body
+					if (url.length < 5) {
+						// clearTemp()
+					    return res.status(400).json({
+							message: 'url minimum length is 5'
+						})
+					}
 
-			const request = require('request');
+
+					// console.log(req.file)
+					
+					// // If file  selected
+		            if ( req.file !== undefined  ) {
+		            	const videoFile = req.file
+
+		    			cloudinary.v2.uploader.upload(videoFile.path, function(err, result) {
+						    if (err) {
+						    	return res.status(400).json({
+									message: err.message
+								})
+						    }else{
+						    	const gallery_data = {
+								url, caption, director:director, pop:pop, production:production, category, image: result.secure_url, imageId: result.public_id, type
+								}
+
+								console.log('gallery with image', gallery_data)
+								res.locals.gallery_data = gallery_data
+		            			return next()
+								console.log('continuation')
+								// const gallery = new Gallery({
+								// url, caption, director:director, pop:pop, production:production, category, image: result.secure_url, imageId: result.public_id, type
+								// })
+
+		      //       			// console.log(gallery)
+
+								// gallery.save()
+
+								// res.status(201).json({message:'success'})
+						    }
+						})
+		            }else{
+		            	const gallery_data = {
+								url, caption, director:director, pop:pop, production:production, category, image: null, imageId: null, type
+								}
+
+								console.log('gallery with no any image', gallery_data)
+						res.locals.gallery_data = gallery_data
+		            	return next()
+
+		            	console.log('continuation 2')
+		            	
+
+						
+
+						// const gallery = new Gallery({
+						// 		url, caption, director:director, pop:pop, production:production, category, image: null, imageId: null, type
+						// 		})
+
+		    //         		// console.log(gallery)
+
+						// gallery.save()
+
+						// res.status(201).json({message:'success'})
+		            }
+		        }
+		    
+		    })
+		} catch(e){
+			res.status(500).json({ message: e })
+		}
+},
+async (req, res) => {
+
+	console.log('next called')
+	// console.log(res.locals.gallery_data)
+// let new_item = gallery_data.toObject();
+// console.log(new_item.url)
+
+const request = require('request');
 
 			const vimeo_test = await new Promise(function(resolve, reject) {
-				request(`https://vimeo.com/api/oembed.json?url=${url}`, { json: true }, (err, res, body) => {
+				request(`https://vimeo.com/api/oembed.json?url=${res.locals.gallery_data.url}`, { json: true }, (err, res, body) => {
 					// console.log(new_item);
 					resolve( body )
 				});
@@ -43,18 +162,64 @@ router.post(
 					status: 404,
 					message: vimeo_test
 				}) }
+					console.log('vimeo')
+			const gallery = new Gallery(res.locals.gallery_data)
 
-			const gallery = new Gallery({
-				url, caption, director:director, pop:pop, production:production, category, type
-			})
+		            		// console.log(gallery)
 
-			await gallery.save()
+						gallery.save()
 
-			return res.status(201).json({gallery: gallery, status: 200})
-		} catch(e){
-			return res.status(500).json({ message: e })
-		}
+						res.status(201).json({message:'success'})
 })
+// router.post(
+// 	'/add', //auth,
+// 	[
+// 		check('url', 'URL is invalid').isURL(),
+// 		check('caption', 'caption minimum length is 5').isLength({ min: 5 }),
+// 		oneOf([
+// 	       check('type').equals('gallery'),
+// 	       check('type').equals('contacts'),
+// 	    ], 'incorrect type of video'),
+// 	],
+// 	async ( req, res ) => {
+// 		try{
+// 			// const baseUrl = config.get('baseUrl')
+// 			const errors = validationResult(req)
+
+// 			if (!errors.isEmpty()) {
+// 				return res.status(400).json({
+// 					errors: errors.array(),
+// 					message: 'error'
+// 				})
+// 			}
+// 			const { url, caption, director, pop, production, category, type } = req.body
+
+// 			const request = require('request');
+
+// 			const vimeo_test = await new Promise(function(resolve, reject) {
+// 				request(`https://vimeo.com/api/oembed.json?url=${url}`, { json: true }, (err, res, body) => {
+// 					// console.log(new_item);
+// 					resolve( body )
+// 				});
+
+// 			  });
+			
+// 			if ( vimeo_test === '404 Not Found' ) { return res.status(400).json({
+// 					status: 404,
+// 					message: vimeo_test
+// 				}) }
+
+// 			const gallery = new Gallery({
+// 				url, caption, director:director, pop:pop, production:production, category, type
+// 			})
+
+// 			await gallery.save()
+
+// 			return res.status(201).json({gallery: gallery, status: 200})
+// 		} catch(e){
+// 			return res.status(500).json({ message: e })
+// 		}
+// })
 // api/gallery/
 router.get('/all/:type',
 	[
@@ -75,7 +240,7 @@ router.get('/all/:type',
 		
 			// console.log(gallery_type)
 			// console.log(gallery_category.length)
-			console.log(search)
+			// console.log(search)
 
 			const gallery = await Gallery.find( search ).populate('category', 'caption')
 	
@@ -108,7 +273,7 @@ router.get('/all/:type',
 			}
 
 			getData().then(new_gallery => {
-				console.log(new_gallery)
+				// console.log(new_gallery)
 			  res.json(new_gallery)
 			})
 
@@ -191,5 +356,24 @@ router.post(
 			return res.status(500).json({ message: e })
 		}
 	})
+
+function sanitizeFile(file, cb) {
+    // Define the allowed extension
+    let fileExts = ['.png', '.jpg', '.jpeg', '.gif']
+    const path = require('path')
+    // Check allowed extensions
+    console.log(path.extname(file.originalname))
+    let isAllowedExt = fileExts.includes(path.extname(file.originalname).toLowerCase());
+    // Mime type must be an image
+    let isAllowedMimeType = file.mimetype.startsWith("image/")
+
+    if (isAllowedExt && isAllowedMimeType) {
+        return cb(null, true) // no errors
+    }
+    else {
+        // pass error msg to callback, which can be displaye in frontend
+        cb('Error: File type not allowed!')
+    }
+}
 
 module.exports = router
