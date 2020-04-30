@@ -71,6 +71,13 @@ router.post(
 						})
 					}
 
+					if ( type !== 'gallery' && type !== 'contacts') {
+						// clearTemp()
+					    return res.status(400).json({
+							message: 'incorrect type of video'
+						})
+					}
+
 					if (url.length < 5) {
 						// clearTemp()
 					    return res.status(400).json({
@@ -159,7 +166,7 @@ async (req, res) => {
 			  });
 			
 			if ( vimeo_test === '404 Not Found' ) { 
-				if ( res.locals.gallery_data.imageId != null || res.locals.gallery_data.imageId != undefined ) {
+				if ( res.locals.gallery_data.imageId !== null && res.locals.gallery_data.imageId !== undefined ) {
 					cloudinary.uploader.destroy(res.locals.gallery_data.imageId, function(result) { console.log(result) })
 				}
 				return res.status(400).json({
@@ -174,7 +181,7 @@ async (req, res) => {
 
 			gallery.save(function(error) {
 			  if (error) {
-			  	if ( res.locals.gallery_data.imageId != null || res.locals.gallery_data.imageId != undefined ) {
+			  	if ( res.locals.gallery_data.imageId !== null && res.locals.gallery_data.imageId !== undefined ) {
 					cloudinary.uploader.destroy(res.locals.gallery_data.imageId, function(result) { console.log(result) })
 				}
 			  }
@@ -326,53 +333,203 @@ router.get('/remove/:id', //auth,
 
 // api/gallery/update/3
 router.post(
-	'/update/:id', //auth,
-	[
-		check('url', 'URL is invalid').isURL(),
-		check('caption', 'caption minimum length is 5').isLength({ min: 5 }),
-		oneOf([
-	       check('type').equals('gallery'),
-	       check('type').equals('contacts'),
-	    ], 'incorrect type of video'),
-	],
-	async ( req, res ) => {
+	'/update/:id/', //auth,
+	async ( req, res, next ) => {
 		try{
+			upload(req, res, (err) => {				
+		        if (err){
+		        	// return err 
+		        	// clearTemp()
+		            return res.status(400).json({
+						message: err
+					})
+		        }else{
+		        	res.locals.gallery_id = req.params.id
+		        	const { url, caption, director, pop, production, category, type } = req.body
+	            	
+	            	// console.log(req.body)
+					if (caption.length < 5) {
+						// clearTemp()
+					    return res.status(400).json({
+							message: 'caption minimum length is 5'
+						})
+					}
 
-			const errors = validationResult(req)
+					if ( type !== 'gallery' && type !== 'contacts') {
+						// clearTemp()
+					    return res.status(400).json({
+							message: 'incorrect type of video'
+						})
+					}
 
-			if (!errors.isEmpty()) {
-				return res.status(400).json({
-					errors: errors.array(),
-					message: 'error'
-				})
-			}
+					if (url.length < 5) {
+						// clearTemp()
+					    return res.status(400).json({
+							message: 'url minimum length is 5'
+						})
+					}
+		        	
+					
+					
+		            	
+					// if ( caption.length < 5 ) {
+					// 	// clearTemp()
+					//     return res.status(400).json({
+					// 		message: 'caption field minimum length is 5'
+					// 	})
+					// }
 
-			const gallery_id = req.params.id
-			const { url, caption, director, pop, production, category, type } = req.body
+		            if ( req.file == undefined) {
 
-			const request = require('request');
+		            	const gallery_data = 
+			            	{
+								url:url, caption:caption, director:director, pop:pop, production:production, category:category, type:type
+							}
+
+								console.log('gallery with no any image', gallery_data)
+						res.locals.gallery_data = gallery_data
+
+		            	return next()
+
+		    //         	Slider.findByIdAndUpdate(slider_id, {caption: caption, text: text, transparency: transparency, videoId: videoId}, function(err, slider){
+			   //  			if (err) return res.status(500).json({ message: err })
+			   //  			res.status(200).json({ message: `slider item ${slider} was updated`, id:slider_id, slider: slider  })
+						// })
+		            }else if(req.file == null){
+		            	const gallery = Gallery.findById(req.params.id)
+
+		            	if ( gallery.imageId != null || gallery.imageId != undefined ) {
+							cloudinary.uploader.destroy(gallery.imageId, function(result) { console.log(result) })
+						}
+
+						const gallery_data = 
+			            	{
+								url:url, caption:caption, director:director, pop:pop, production:production, category:category, image: null, imageId: null, type:type
+							}
+
+								console.log('gallery with deleted image', gallery_data)
+						res.locals.gallery_data = gallery_data
+
+		            	return next()
+
+		            }else{
+		            	const galleryFile = req.file
+
+						cloudinary.v2.uploader.upload(galleryFile.path, function(err, result) {
+						    if (err) {
+						    	return res.status(400).json({
+									message: err.message
+								})
+						    }
+
+						    const gallery = Gallery.findById(req.params.id)
+
+			            	if ( gallery.imageId !== null && gallery.imageId !== undefined ) {
+								cloudinary.uploader.destroy(gallery.imageId, function(result) { console.log(result) })
+							}
+
+
+							const gallery_data = 
+			            	{
+								url:url, caption:caption, director:director, pop:pop, production:production, category:category, image: result.secure_url, imageId: result.public_id, type:type
+							}
+
+								console.log('gallery with new image', gallery_data)
+							res.locals.gallery_data = gallery_data
+
+		            		return next()
+						})						
+		            }	            
+		        }
+		    })
+		} catch(e){
+			res.status(500).json({ message: e })
+		}
+	},
+
+	async (req, res) => {
+
+		console.log('next called')
+		console.log(res.locals.gallery_data)
+// let new_item = gallery_data.toObject();
+// console.log(new_item.url)
+console.log('new id of gall', res.locals.gallery_id)
+
+		const request = require('request');
 
 			const vimeo_test = await new Promise(function(resolve, reject) {
-				request(`https://vimeo.com/api/oembed.json?url=${url}`, { json: true }, (err, res, body) => {
+				request(`https://vimeo.com/api/oembed.json?url=${res.locals.gallery_data.url}`, { json: true }, (err, res, body) => {
 					// console.log(new_item);
 					resolve( body )
 				});
 
 			  });
 			
-			if ( vimeo_test === '404 Not Found' ) { return res.status(400).json({
+			if ( vimeo_test === '404 Not Found' ) { 
+				if ( res.locals.gallery_data.imageId !== null && res.locals.gallery_data.imageId !== undefined ) {
+					cloudinary.uploader.destroy(res.locals.gallery_data.imageId, function(result) { console.log(result) })
+				}
+				return res.status(400).json({
 					status: 404,
 					message: vimeo_test
-				}) }
-
-			await Gallery.findByIdAndUpdate(gallery_id, { url: url, caption: caption, director:director, pop:pop, production:production, category: category, type: type }, function(err, gallery){
+				}) 
+			}
+			// console.log('vimeo')
+			await Gallery.findByIdAndUpdate(res.locals.gallery_id, res.locals.gallery_data, function(err, gallery){
 			    if (err) return res.status(500).json({ message: err })
 			    return res.status(200).json({ status: 200 })
 			});
-		} catch(e){
-			return res.status(500).json({ message: e })
-		}
+
+			// res.status(201).json({message:'success'})
 	})
+// router.post(
+// 	'/update/:id', //auth,
+// 	[
+// 		check('url', 'URL is invalid').isURL(),
+// 		check('caption', 'caption minimum length is 5').isLength({ min: 5 }),
+// 		oneOf([
+// 	       check('type').equals('gallery'),
+// 	       check('type').equals('contacts'),
+// 	    ], 'incorrect type of video'),
+// 	],
+// 	async ( req, res ) => {
+// 		try{
+
+// 			const errors = validationResult(req)
+
+// 			if (!errors.isEmpty()) {
+// 				return res.status(400).json({
+// 					errors: errors.array(),
+// 					message: 'error'
+// 				})
+// 			}
+
+// 			const gallery_id = req.params.id
+// 			const { url, caption, director, pop, production, category, type } = req.body
+
+// 			const request = require('request');
+
+// 			const vimeo_test = await new Promise(function(resolve, reject) {
+// 				request(`https://vimeo.com/api/oembed.json?url=${url}`, { json: true }, (err, res, body) => {
+// 					// console.log(new_item);
+// 					resolve( body )
+// 				});
+
+// 			  });
+			
+// 			if ( vimeo_test === '404 Not Found' ) { return res.status(400).json({
+// 					status: 404,
+// 					message: vimeo_test
+// 				}) }
+
+// 			await Gallery.findByIdAndUpdate(gallery_id, { url: url, caption: caption, director:director, pop:pop, production:production, category: category, type: type }, function(err, gallery){
+// 			    if (err) return res.status(500).json({ message: err })
+// 			    return res.status(200).json({ status: 200 })
+// 			});
+// 		} catch(e){
+// 			return res.status(500).json({ message: e })
+// 		}
+// 	})
 
 function sanitizeFile(file, cb) {
     // Define the allowed extension
