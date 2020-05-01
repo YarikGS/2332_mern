@@ -379,7 +379,7 @@ router.post(
 					// 	})
 					// }
 
-		            if ( image == undefined) {
+		            if ( req.file == undefined) {
 
 		            	const gallery_data = 
 			            	{
@@ -395,7 +395,7 @@ router.post(
 			   //  			if (err) return res.status(500).json({ message: err })
 			   //  			res.status(200).json({ message: `slider item ${slider} was updated`, id:slider_id, slider: slider  })
 						// })
-		            }else if(image == null){
+		            }else if( req.file == undefined && image == null){
 		            	const gallery = Gallery.findById(req.params.id)
 
 		            	if ( gallery.imageId != null || gallery.imageId != undefined ) {
@@ -412,7 +412,7 @@ router.post(
 
 		            	return next()
 
-		            }else{
+		            }else if(req.file !== undefined){
 		            	const galleryFile = req.file
 
 						cloudinary.v2.uploader.upload(galleryFile.path, function(err, result) {
