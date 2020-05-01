@@ -345,7 +345,7 @@ router.post(
 					})
 		        }else{
 		        	res.locals.gallery_id = req.params.id
-		        	const { url, caption, director, pop, production, category, type } = req.body
+		        	const { image, url, caption, director, pop, production, category, type } = req.body
 	            	
 	            	// console.log(req.body)
 					if (caption.length < 5) {
@@ -379,7 +379,7 @@ router.post(
 					// 	})
 					// }
 
-		            if ( req.file == undefined) {
+		            if ( image == undefined) {
 
 		            	const gallery_data = 
 			            	{
@@ -395,7 +395,7 @@ router.post(
 			   //  			if (err) return res.status(500).json({ message: err })
 			   //  			res.status(200).json({ message: `slider item ${slider} was updated`, id:slider_id, slider: slider  })
 						// })
-		            }else if(req.file == null){
+		            }else if(image == null){
 		            	const gallery = Gallery.findById(req.params.id)
 
 		            	if ( gallery.imageId != null || gallery.imageId != undefined ) {
