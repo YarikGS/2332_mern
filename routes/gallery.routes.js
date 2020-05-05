@@ -396,15 +396,15 @@ router.post(
 			   //  			res.status(200).json({ message: `slider item ${slider} was updated`, id:slider_id, slider: slider  })
 						// })
 		            }else if( req.file == undefined && image === 'null'){
-		            	const gallery = Gallery.findById(req.params.id)
+		    //         	const gallery = Gallery.findById(req.params.id)
 
-		            	if ( gallery.imageId !== null && gallery.imageId !== undefined ) {
-							cloudinary.uploader.destroy(gallery.imageId, function(result) { console.log(result) })
-						}
+		    //         	if ( gallery.imageId !== null && gallery.imageId !== undefined ) {
+						// 	cloudinary.uploader.destroy(gallery.imageId, function(result) { console.log(result) })
+						// }
 
 						const gallery_data = 
 			            	{
-								url:url, caption:caption, director:director, pop:pop, production:production, category:category, image: null, imageId: null, type:type
+								delete: 'delete', url:url, caption:caption, director:director, pop:pop, production:production, category:category, image: null, imageId: null, type:type
 							}
 
 								console.log('gallery with deleted image', gallery_data)
@@ -422,16 +422,16 @@ router.post(
 								})
 						    }
 
-						    const gallery = Gallery.findById(req.params.id)
+						 //    const gallery = Gallery.findById(req.params.id)
 
-			            	if ( gallery.imageId !== null && gallery.imageId !== undefined ) {
-								cloudinary.uploader.destroy(gallery.imageId, function(result) { console.log(result) })
-							}
+			    //         	if ( gallery.imageId !== null && gallery.imageId !== undefined ) {
+							// 	cloudinary.uploader.destroy(gallery.imageId, function(result) { console.log(result) })
+							// }
 
 
 							const gallery_data = 
 			            	{
-								url:url, caption:caption, director:director, pop:pop, production:production, category:category, image: result.secure_url, imageId: result.public_id, type:type
+								delete: 'delete', url:url, caption:caption, director:director, pop:pop, production:production, category:category, image: result.secure_url, imageId: result.public_id, type:type
 							}
 
 								console.log('gallery with new image', gallery_data)
@@ -454,7 +454,14 @@ router.post(
 // let new_item = gallery_data.toObject();
 // console.log(new_item.url)
 console.log('new id of gall', res.locals.gallery_id)
+		
+		if (res.locals.gallery_data.delete === 'delete') {
+			const gallery = await Gallery.findById(req.params.id)
 
+        	if ( gallery.imageId !== null && gallery.imageId !== undefined ) {
+				cloudinary.uploader.destroy(gallery.imageId, function(result) { console.log(result) })
+			}
+		}
 		const request = require('request');
 
 			const vimeo_test = await new Promise(function(resolve, reject) {
