@@ -398,7 +398,7 @@ router.post(
 		            }else if( req.file == undefined && image === 'null'){
 		            	const gallery = Gallery.findById(req.params.id)
 
-		            	if ( gallery.imageId != null || gallery.imageId != undefined ) {
+		            	if ( gallery.imageId !== null && gallery.imageId !== undefined ) {
 							cloudinary.uploader.destroy(gallery.imageId, function(result) { console.log(result) })
 						}
 
