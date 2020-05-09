@@ -68,7 +68,7 @@ router.get('/all/:type',
 							//   console.log('there are %d items for %s', count, new_item.caption);
 							// 	count_items = count
 							// });
-							Gallery.countDocuments({ type: new_item.type }, function (err, count) {
+							Gallery.countDocuments({ category: new_item._id }, function (err, count) {
 							  console.log('there are %d items for %s', count, new_item.caption);
 								new_item.count_items = count
 								resolve(new_item)
@@ -88,7 +88,7 @@ router.get('/all/:type',
 					    // })
 						}else{
 							console.log('count Photos model');
-							Photo.countDocuments({ type: new_item.type }, function (err, count) {
+							Photo.countDocuments({ category: new_item._id }, function (err, count) {
 							  console.log('there are %d items for %s', count, new_item.caption);
 								new_item.count_items = count
 								resolve(new_item)
