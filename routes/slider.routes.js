@@ -3,6 +3,7 @@ const config = require('config')
 const multer  = require('multer')
 const {check, body, validationResult} = require('express-validator')
 const Slider = require('../models/Slider')
+const Gallery = require('../models/Gallery')
 const auth = require('../middleware/auth.middleware')
 const router = Router()
 // const move = require('../filemove');
@@ -12,7 +13,7 @@ const router = Router()
 // // Set storage engine
 // const storage = multer.diskStorage({
 //     destination: './client/public/uploads/temp',
-//     filename: function (req, file, cb) {        
+//     filename: function (req, file, cb) {
 //         // null as first argument means no error
 //         const path = require('path')
 // 	    cb(null, Date.now() + path.extname(file.originalname) )
@@ -21,7 +22,7 @@ const router = Router()
 
 // // Init upload
 // const upload = multer({
-//     storage: storage, 
+//     storage: storage,
 //     limits: {
 //         fileSize: 2500000
 //     },
@@ -56,27 +57,24 @@ cloudinary.config({
 // api/slider/add
 router.post(
 	'/add', //auth,
-	async ( req, res ) => {
+	async ( req, res, next ) => {
 		try{
-			upload(req, res, (err) => {				
-		        if (err){
-		        	// return err 
-		        	// clearTemp()
-		            return res.status(400).json({
-						message: err.message
-					})
-		        }else{
-		            // If file is not selected
-		            if (req.file == undefined) {
+			upload(req, res, (err) => {
+        if (err){
+        	// return err
+        	// clearTemp()
+          return res.status(400).json({message: err.message})
+        }else{
+          // If file is not selected
+          if (req.file == undefined) {
 		            	// console.log()
-		            	return res.status(400).json({
-							message: 'No file selected!'
-						})
-		            }else{
+		            	return res.status(400).json({message: 'No file selected!'})
+		      }else{
 
-		            	const { caption, text, transparency, videoId } = req.body
+		       const { caption, text, videoId } = req.body
+           let {transparency} = req.body
 
-		            	
+
 						// if (caption.length < 5) {
 						// 	// clearTemp()
 						//     return res.status(400).json({
@@ -87,12 +85,16 @@ router.post(
 						if ( transparency < 0 || transparency > 100 ) {
 						    return res.status(400).json({
 								message: 'transparency should be in range 0-100'
-							})
+							       })
 						}
 
-		            	const sliderFile = req.file
+            if (transparency == undefined) {
+              transparency = 0
+            }
+
+		        const sliderFile = req.file
 		            	// console.log(sliderFile)
-		               
+
 						// const oldPath = sliderFile['destination']+'/'+sliderFile['filename']
 
 						// const newPath = './client/public/uploads/slider/'+sliderFile['filename']
@@ -105,7 +107,7 @@ router.post(
 
 						// move(oldPath, newPath, (error) => {
 						// 	if (error){
-					 //        	// return err 
+					 //        	// return err
 					 //        	clearTemp()
 					 //            return res.status(400).json({
 						// 			message: error
@@ -115,30 +117,47 @@ router.post(
 						// console.log(slider._id)
 						// clearTemp()
 		                // res.status(201).json({message:'success'})
+              if (videoId !== null) {
+                  console.log('try get gallery');
+                  const gallery = Gallery.findById(videoId)
+
+                  gallery.exec().then(function () {
+                      // handle success
+                      console.log('received gallery');
+                  }).catch(function (err) {
+                      // handle error
+                      return res.status(404).json({message:"Video Not Found"})
+                  });
+              }
 
 
 		    			cloudinary.v2.uploader.upload(sliderFile.path, function(err, result) {
 						    if (err) {
-						    	return res.status(400).json({
-									message: err.message
-								})
+						    	return res.status(400).json({message: err.message})
 						    }
-
-						    const slider = new Slider({
-								caption, text, transparency, videoId: videoId, image: result.secure_url, imageId: result.public_id
-							})
-
-							slider.save()
+                 res.locals.slider_data = new Slider({
+   								caption, text, transparency, videoId: videoId, image: result.secure_url, imageId: result.public_id
+   							})
+                console.log('uploaded img with data', res.locals.slider_data);
+                res.locals.slider_data.save()
+						  //   const slider = new Slider({
+							// 	caption, text, transparency, videoId: videoId, image: result.secure_url, imageId: result.public_id
+							// })
+              //
+							// slider.save()
 
 						    res.status(201).json({message:'success'})
 						})
-		            }		            
+		      }
 
-		        }
-		    
-		    })
+		    }
+
+		   })
 		} catch(e){
-			res.status(500).json({ message: e })
+      if ( res.locals.slider_data.imageId !== null && res.locals.slider_data.imageId !== undefined ) {
+          cloudinary.uploader.destroy(res.locals.slider_data.imageId, function(result) { console.log('img delete in catch',result) })
+      }
+      res.status(500).json({ message: e })
 		}
 })
 // api/slider/
@@ -155,14 +174,17 @@ router.get('/', async ( req, res ) => {
 router.get('/:id', async ( req, res ) => {
 	try{
 		const slider = await Slider.findById(req.params.id)
-		res.json(slider)
+    if (slider===null) {
+      return res.status(404).json({message:'Slide not found'})
+    }
+		res.status(200).json(slider)
 	} catch(e){
 		res.status(500).json({ message: e })
 	}
 })
 
 // api/slider/remove/3
-router.get('/remove/:id/:imageId', //auth, 
+router.get('/remove/:id/:imageId', //auth,
 	async ( req, res ) => {
 	try{
 		const slider_id = req.params.id
@@ -183,9 +205,9 @@ router.post(
 	'/update/:id/:imageId', //auth,
 	async ( req, res ) => {
 		try{
-			upload(req, res, (err) => {				
+			upload(req, res, (err) => {
 		        if (err){
-		        	// return err 
+		        	// return err
 		        	// clearTemp()
 		            return res.status(400).json({
 						message: err
@@ -194,8 +216,9 @@ router.post(
 		        	const slider_id = req.params.id
 					const slider_image = req.params.imageId
 					console.log(slider_image)
-		        	const { caption, text, transparency, videoId } = req.body
-		            	
+		        	const { caption, text, videoId } = req.body
+              let {transparency} = req.body
+
 					// if ( caption.length < 5 ) {
 					// 	// clearTemp()
 					//     return res.status(400).json({
@@ -208,6 +231,23 @@ router.post(
 							message: 'transparency should be in range 0-100'
 						})
 					}
+
+          if (transparency == undefined) {
+            transparency = 0
+          }
+
+          if (videoId !== null) {
+              console.log('try get gallery');
+              const gallery = Gallery.findById(videoId)
+
+              gallery.exec().then(function () {
+                  // handle success
+                  console.log('received gallery');
+              }).catch(function (err) {
+                  // handle error
+                  return res.status(404).json({message:"Video Not Found"})
+              });
+          }
 
 		            if ( req.file == undefined || req.file == null ) {
 		            	Slider.findByIdAndUpdate(slider_id, {caption: caption, text: text, transparency: transparency, videoId: videoId}, function(err, slider){
@@ -223,7 +263,7 @@ router.post(
 
 						// move(oldPath, newPath, (error) => {
 						// 	if (error){
-					 //        	// return err 
+					 //        	// return err
 					 //        	clearTemp()
 					 //            return res.status(400).json({
 						// 			message: error
@@ -246,14 +286,14 @@ router.post(
 				    			if (err) return res.status(500).json({ message: err })
 				    			return res.status(200).json({ status: 200  })
 							})
-						})						
+						})
 		            }
 
 		   //          Slider.findByIdAndUpdate(slider_id, update_data, function(err, slider){
 		   //          	// clearTemp()
 			  //   		if (err) return res.status(500).json({ message: err })
 			  //   		res.status(200).json({ message: `slider item ${slider} was updated`, id:slider_id, slider: slider  })
-					// });		            
+					// });
 		        }
 		    })
 		} catch(e){
