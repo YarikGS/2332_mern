@@ -70,7 +70,7 @@ router.get('/all/:type',
 							// });
 							Gallery.countDocuments({ type: new_item.type }, function (err, count) {
 							  console.log('there are %d items for %s', count, new_item.caption);
-								new_item.count = count
+								new_item.count_items = count
 								resolve(new_item)
 							});
 
@@ -90,7 +90,7 @@ router.get('/all/:type',
 							console.log('count Photos model');
 							Photo.countDocuments({ type: new_item.type }, function (err, count) {
 							  console.log('there are %d items for %s', count, new_item.caption);
-								new_item.count = count
+								new_item.count_items = count
 								resolve(new_item)
 							});
 						}
