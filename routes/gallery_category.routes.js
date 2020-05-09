@@ -30,8 +30,8 @@ router.post(
 					message: 'error'
 				})
 			}
-			const { 
-				// url, 
+			const {
+				// url,
 				caption } = req.body
 
 			const gallery_category = new Gallery_category({
@@ -55,14 +55,78 @@ router.get('/all/:type',
 	async ( req, res ) => {
 		try{
 			const gallery_categories = await Gallery_category.find({ type: req.params.type })
-			res.json(gallery_categories)
+			// res.json(gallery_categories)
+
+			const functionWithPromise = item => { //a function that returns a promise
+			  return new Promise(function(resolve, reject) {
+						let count_items
+					  let new_item = item.toObject();
+						console.log(new_item.type);
+						if (new_item.type == 'gallery' || new_item.type == 'contacts') {
+							console.log('count Gallery model');
+							// Gallery.countDocuments({ type: new_item.type }, function (err, count) {
+							//   console.log('there are %d items for %s', count, new_item.caption);
+							// 	count_items = count
+							// });
+							Gallery.countDocuments({ type: new_item.type }, function (err, count) {
+							  console.log('there are %d items for %s', count, new_item.caption);
+								new_item.count = count
+								resolve(new_item)
+							});
+
+							// const counter = Gallery.countDocuments({ type: new_item.type })
+							//
+					    // console.log('removed slider');
+					    // counter.exec().then(function (result) {
+					    //     // handle success
+					    //     console.log('res should be sent', result);
+							// 			new_item.count = result
+							//
+							// 			console.log('new counted', new_item);
+							// 			return resolve(new_item)
+					    //     // return res.status(200).json({ message: 'sussess', code:200 })
+					    // })
+						}else{
+							console.log('count Photos model');
+							Photo.countDocuments({ type: new_item.type }, function (err, count) {
+							  console.log('there are %d items for %s', count, new_item.caption);
+								new_item.count = count
+								resolve(new_item)
+							});
+						}
+						// new_item.count = count_items
+						console.log('new item is', new_item);
+						// new_item.vimeo_response = body;
+
+						// if (item.category !== null ) {new_item.category = item.category.caption}
+
+						// console.log(new_item);
+						// resolve( new_item )
+			  });
+			}
+
+			const anAsyncFunction = async item => {
+			  return functionWithPromise(item)
+			}
+
+			const getData = async () => {
+			  return Promise.all(gallery_categories.map(item => anAsyncFunction(item)))
+			}
+
+			getData().then(new_gallery => {
+				// console.log('new', new_gallery)
+			  res.json(new_gallery)
+			})
+
+
+
 		} catch(e){
 			res.status(500).json({ message: e })
 		}
 })
 
 // api/gallery_category/remove/3
-router.get('/remove/:id', //auth, 
+router.get('/remove/:id', //auth,
 	async ( req, res ) => {
 	try{
 		const gallery_category_id = req.params.id
@@ -107,7 +171,7 @@ router.post(
 			}
 
 			const gallery_category_id = req.params.id
-			const { 
+			const {
 				//url,
 				 caption } = req.body
 
