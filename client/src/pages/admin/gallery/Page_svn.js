@@ -14,16 +14,15 @@ export const AdminGalleryPage = () => {
 	const message = useMessage()
 	const itemData = useLocation().state
 	// const {loading, error, request, clearError} = useHttp()
-	const [image, setImage] = useState(null)
 	const [url, setUrl] = useState('')
 	const [caption, setCaption] = useState('')
-	const [category, setCategory] = useState('5eb6b3f65f9d1d97c7f4bad3')
+	const [category, setCategory] = useState('')
 	const [type, setType] = useState('gallery')
 
 	let load_category = ''
-
+	
 	console.log(`category to load is`)
-	if ( itemData !== null &&  itemData !== undefined ) {
+	if ( itemData !== null ) {
 		console.log(`category to load ${itemData.category}`)
 		load_category = `?category=${itemData.category}`
 
@@ -38,30 +37,12 @@ export const AdminGalleryPage = () => {
 		window.M.updateTextFields()
 	}, [] )
 
-	// const createHandler = async () => {
-	// 	try {
-	// 		const data = await request( '/api/gallery/add', 'POST', {url, caption, category, type}, {'Authorization': `Bearer ${auth.token}`})
-	// 		console.log(data)
-	// 		fetchVideos()
-	// 		// history.push(`/admin_gallery/${data.gallery._id}`)
-	// 	} catch(e) {}
-	// }
-
 	const createHandler = async () => {
 		try {
-			const form_data = new FormData()
-	   		form_data.append('image', image)
-	   		form_data.append('caption', caption)
-	   		form_data.append('url', url)
-	   		form_data.append('category', category)
-	   		form_data.append('type', type)
-				// console.log('form data b4 send', form_data.get('image'))
-			const data = await request( '/api/gallery/add', 'POST', form_data, {'Content-Type': 'multipart/form-data',
-		 'Authorization': `Bearer ${auth.token}` })
-		 // const data = await request( '/api/gallery_category/remove/5ebe1eeb0e77f091e00ebc48', 'GET', null, {
-		 // 'Authorization': `Bearer ${auth.token}` })
-
+			const data = await request( '/api/gallery/add', 'POST', {url, caption, category, type}, {'Authorization': `Bearer ${auth.token}`})
+			console.log(data)
 			fetchVideos()
+			// history.push(`/admin_gallery/${data.gallery._id}`)
 		} catch(e) {}
 	}
 
@@ -92,17 +73,7 @@ export const AdminGalleryPage = () => {
 				        <div className="card-content white-text">
 				        	<span className="card-title">Add new Vimeo Video</span>
 				        	<div className="row">
-
-				        	<div className="file-field input-field">
-							      <div className="btn">
-							        <span>Slider Image</span>
-							        <input onChange={e => setImage(e.target.files[0])} type="file" name="slider" />
-							      </div>
-							      <div className="file-path-wrapper">
-							        <input className="file-path validate" type="text" />
-							      </div>
-							    </div>
-
+				        		
 						        <div className="input-field">
 						          <input onChange={e => setUrl(e.target.value)} id="url" type="text" name="url" />
 						          <label htmlFor="url">Vimeo url</label>

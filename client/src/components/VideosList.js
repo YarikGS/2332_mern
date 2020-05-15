@@ -23,9 +23,9 @@ export const VideosList = ({videos, auth}) => {
         // window.location.reload(false)
 
       } catch(e) {}
-      
+
     }
-  
+
 
 	return (
 		  <table>
@@ -43,17 +43,17 @@ export const VideosList = ({videos, auth}) => {
         		return (
 					<tr key={video._id}>
 			            <td>
-                    <Link to={`/${path}gallery/${video._id}`}>Visit Page</Link> 
+                    <Link to={`/${path}gallery/${video._id}`}>Visit Page</Link>
                   </td>
 			            <td>{video.caption}</td>
 			            <td><strong>{new Date(video.date).toLocaleDateString()}</strong></td>
                   <td>
                     <Link to={{
                         pathname: `${path}gallery`,
-                        state: { category: video.category }
-                      }}>{video.category}</Link>
+
+                      }}>smh</Link>
                   </td>
-                  {auth && 
+                  {auth &&
                     <td>
                       <Link to={{
                         pathname: `/admin_edit_gallery/${video._id}`,
@@ -64,7 +64,7 @@ export const VideosList = ({videos, auth}) => {
                   }
 			         </tr>
         		)
-        	} ) }          
+        	} ) }
         </tbody>
       </table>
 	)

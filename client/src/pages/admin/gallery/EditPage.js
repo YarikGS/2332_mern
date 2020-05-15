@@ -26,10 +26,24 @@ export const AdminGalleryEditPage = () => {
 	}, [] )
 
 	const editHandler = async () => {
-		try {
-			const data = await request( `/api/gallery/update/${itemId}`, 'POST', {url, caption, category, type}, {'Authorization': `Bearer ${auth.token}`})
-			console.log(data)
-			history.push(`/admin_gallery/${data.gallery._id}`)
+		// try {
+		// 	const data = await request( `/api/gallery/update/${itemId}`, 'POST', {url, caption, category, type}, {'Authorization': `Bearer ${auth.token}`})
+		// 	console.log(data)
+		// 	history.push(`/admin_gallery/${data.gallery._id}`)
+		// } catch(e) {}
+
+		try {				
+			const form_data = new FormData()
+	   		// form_data.append('image', image)
+	   		form_data.append('caption', caption)
+	   		form_data.append('url', url)
+	   		form_data.append('category', category)
+	   		form_data.append('type', type)
+				// console.log('form data b4 send', form_data.get('image'))
+			const data = await request( `/api/gallery/update/${itemId}`, 'POST', form_data, {'Content-Type': 'multipart/form-data',
+		 'Authorization': `Bearer ${auth.token}` })
+			// 	history.push(`/admin_gallery/${data.gallery._id}`)
+				history.push(`/admin_gallery`)
 		} catch(e) {}
 	}
 

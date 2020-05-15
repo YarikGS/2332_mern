@@ -31,9 +31,9 @@ router.post(
 	'/add', //auth,
 	async ( req, res ) => {
 		try{
-			upload(req, res, (err) => {				
+			upload(req, res, (err) => {
 		        if (err){
-		        	// return err 
+		        	// return err
 		        	// clearTemp()
 		            return res.status(400).json({
 						message: err.message
@@ -50,7 +50,7 @@ router.post(
 		            	const { caption, text, category } = req.body
 
 		            	const photoFile = req.file
-		           
+
 		    			cloudinary.v2.uploader.upload(photoFile.path, function(err, result) {
 						    if (err) {
 						    	return res.status(400).json({
@@ -66,10 +66,10 @@ router.post(
 
 						    res.status(201).json({message:'success'})
 						})
-		            }		            
+		            }
 
 		        }
-		    
+
 		    })
 		} catch(e){
 			res.status(500).json({ message: e })
@@ -96,7 +96,7 @@ router.get('/:id', async ( req, res ) => {
 })
 
 // api/photo/remove/3
-router.get('/remove/:id/:imageId', //auth, 
+router.get('/remove/:id/:imageId', //auth,
 	async ( req, res ) => {
 	try{
 		const photo_id = req.params.id
@@ -117,9 +117,9 @@ router.post(
 	'/update/:id/:imageId', //auth,
 	async ( req, res ) => {
 		try{
-			upload(req, res, (err) => {				
+			upload(req, res, (err) => {
 		        if (err){
-		        	// return err 
+		        	// return err
 		        	// clearTemp()
 		            return res.status(400).json({
 						message: err
@@ -151,8 +151,8 @@ router.post(
 				    			if (err) return res.status(500).json({ message: err })
 				    			return res.status(200).json({ status: 200 })
 							})
-						})						
-		            }            
+						})
+		            }
 		        }
 		    })
 		} catch(e){

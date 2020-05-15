@@ -71,7 +71,7 @@ router.post(
 						})
 		            }else{
 
-		            	const { caption, text, instagram } = req.body
+		            	const { caption, text, email, instagram } = req.body
 
 		            	
 						if (caption.length < 5 || text.length < 5 ) {
@@ -91,7 +91,7 @@ router.post(
 						    }
 
 							const team = new Team({
-								caption, text, image: result.secure_url, imageId: result.public_id, instagram
+								caption, text, email:email, image: result.secure_url, imageId: result.public_id, instagram
 							})
 
 							team.save()
@@ -158,7 +158,7 @@ router.post(
 		        	const team_id = req.params.id
 					const team_image = req.params.imageId
 
-		        	const { caption, text, instagram } = req.body
+		        	const { caption, text, email, instagram } = req.body
 		            	
 					if (caption.length < 5 || text.length < 5 ) {
 						
@@ -169,7 +169,7 @@ router.post(
 
 		            // If file is not selected
 		            if ( req.file == undefined || req.file == null ) {
-		            	Team.findByIdAndUpdate(team_id, {caption: caption, text: text, instagram: instagram}, function(err, team){
+		            	Team.findByIdAndUpdate(team_id, {caption: caption, text: text, email: email, instagram: instagram}, function(err, team){
 			    			if (err) return res.status(500).json({ message: err })
 			    			res.status(200).json({ message: `team item ${team} was updated`, id:team_id, team: team  })
 						})
@@ -183,9 +183,10 @@ router.post(
 								})
 						    }
 
+						    //delete old image when new image successfully uploaded
 						    cloudinary.uploader.destroy(team_image, function(result) { console.log(result) })
 
-						    Team.findByIdAndUpdate(team_id, { caption: caption, text: text, image: result.secure_url, imageId: result.public_id, instagram: instagram}, function(err, team){
+						    Team.findByIdAndUpdate(team_id, { caption: caption, text: text, email: email, image: result.secure_url, imageId: result.public_id, instagram: instagram}, function(err, team){
 				    			if (err) return res.status(500).json({ message: err })
 				    			return res.status(200).json({ status: 200 })
 							})

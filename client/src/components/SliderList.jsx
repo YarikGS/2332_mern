@@ -23,7 +23,7 @@ export const SliderList = ({slider, auth}) => {
       window.location.reload(false)
 
     } catch(e) {}
-    
+
   }
 
 	return (
@@ -47,7 +47,7 @@ export const SliderList = ({slider, auth}) => {
 			            <td>{slider.caption}</td>
                   <td>{slider.text}</td>
 			            <td><strong>{new Date(slider.date).toLocaleDateString()}</strong></td>
-                  {auth && 
+                  {auth &&
                     <td>
                       <Link to={{
                         pathname: `/admin_edit_slider/${slider._id}`,
@@ -58,7 +58,7 @@ export const SliderList = ({slider, auth}) => {
                   }
 			         </tr>
         		)
-        	} ) }          
+        	} ) }
         </tbody>
       </table>
 	)

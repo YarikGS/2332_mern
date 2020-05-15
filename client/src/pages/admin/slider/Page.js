@@ -27,11 +27,12 @@ export const AdminSliderPage = () => {
 	}, [] )
 
 	const createHandler = async () => {
-		try {				
+		try {
 			const form_data = new FormData()
 	   		form_data.append('image', image)
 	   		form_data.append('caption', caption)
 	   		form_data.append('text', text)
+				form_data.append('videoId', '5ebe1ceba251890ee0d46b4a')
 				// console.log('form data b4 send', form_data.get('image'))
 			const data = await request( '/api/slider/add', 'POST', form_data, {'Content-Type': 'multipart/form-data',
 		 'Authorization': `Bearer ${auth.token}` })
