@@ -78,7 +78,17 @@ router.post(
 // api/photo/
 router.get('/', async ( req, res ) => {
 	try{
-		const photo = await Photo.find()
+    const photo_category = req.query.category
+
+    let search = { }
+
+    if ( photo_category !== undefined && photo_category.length ) {
+      search.category = photo_category
+    }
+
+		const photo = await Photo.find(search)
+
+    console.log(photo);
 
 		res.json(photo)
 	} catch(e){
