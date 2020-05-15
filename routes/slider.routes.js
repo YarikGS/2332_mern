@@ -189,15 +189,28 @@ router.get('/remove/:id/:imageId', //auth,
 	try{
 		const slider_id = req.params.id
 		const slider_image = req.params.imageId
-		console.log(slider_image)
-		await Slider.findByIdAndDelete(slider_id, function (err, doc) {
+
+    await Slider.findByIdAndDelete(slider_id, function (err, doc) {
 			cloudinary.uploader.destroy(slider_image, function(result) { console.log(result) })
 		  // fs.unlinkSync('./client/public/uploads/slider/'+slider_image)
 		  if (err) return res.status(500).json({ message: err })
 		  res.status(200).json({ message: `success`, status: 200 })
 		})
+
+    // const remover = Slider.findByIdAndDelete(slider_id)
+    // await cloudinary.uploader.destroy(slider_image, function(result) { console.log(result) })
+    // console.log('removed slider');
+    // remover.exec().then(function () {
+    //     // handle success
+    //     console.log('res should be sent');
+    //     return res.status(200).json({ message: 'sussess', code:200 })
+    // }).catch(function (err) {
+    //     // handle error
+    //     return res.status(500).json({message:err})
+    // });
+
 	} catch(e){
-		res.status(500).json({ message: e })
+		return res.status(500).json({ message: e })
 	}
 })
 

@@ -9,7 +9,7 @@ node_modules
 
 /uploads
 uploads
-
+/client
 config/default.json
 
 npm-debug.log*

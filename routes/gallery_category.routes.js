@@ -32,10 +32,10 @@ router.post(
 			}
 			const {
 				// url,
-				caption } = req.body
+				caption, type } = req.body
 
 			const gallery_category = new Gallery_category({
-				caption
+				caption, type
 			})
 
 			await gallery_category.save()
@@ -136,12 +136,16 @@ router.get('/remove/:id', //auth,
 		await Gallery_category.findByIdAndDelete(gallery_category_id, function (err, doc) {
 		  if (err) return res.status(500).json({ message: err })
 
-		  	Gallery.updateMany({"category": gallery_category._id}, {"$set":{"category": null}});
 
-			Photo.updateMany({"category": gallery_category._id}, {"$set":{"category": null}});
 
-		  res.status(200).json({ message: `success`, status: 200 })
+
 		})
+
+		await Gallery.updateMany({"category": gallery_category._id}, {"$set":{"category": null}});
+
+		await Photo.updateMany({"category": gallery_category._id}, {"$set":{"category": null}});
+
+		res.status(200).json({ message: `success`, status: 200 })
 	} catch(e){
 		res.status(500).json({ message: e })
 	}
