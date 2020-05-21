@@ -65,10 +65,10 @@ router.post(
 	            	const { url, caption, director, pop, production, category, type } = req.body
 
 	            	// console.log(req.body)
-					if (caption.length < 5) {
+					if (caption.length < 2) {
 						// clearTemp()
 					    return res.status(400).json({
-							message: 'caption minimum length is 5'
+							message: 'Caption is too short'
 						})
 					}
 
@@ -79,10 +79,10 @@ router.post(
 						})
 					}
 
-					if (url.length < 5) {
+					if (url.length < 2) {
 						// clearTemp()
 					    return res.status(400).json({
-							message: 'url minimum length is 5'
+							message: 'url is too short'
 						})
 					}
 
@@ -354,10 +354,10 @@ router.post(
 		        	const { image, url, caption, director, pop, production, category, type } = req.body
 
 	            	// console.log(req.body)
-					if (caption.length < 5) {
+					if (caption.length < 2) {
 						// clearTemp()
 					    return res.status(400).json({
-							message: 'caption minimum length is 5'
+							message: 'Caption is too short'
 						})
 					}
 
@@ -368,10 +368,10 @@ router.post(
 						})
 					}
 
-					if (url.length < 5) {
+					if (url.length < 2) {
 						// clearTemp()
 					    return res.status(400).json({
-							message: 'url minimum length is 5'
+							message: 'url is too short'
 						})
 					}
 

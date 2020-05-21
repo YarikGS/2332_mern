@@ -12,7 +12,7 @@ const router = Router()
 // // Set storage engine
 // const storage = multer.diskStorage({
 //     destination: './client/public/uploads/temp',
-//     filename: function (req, file, cb) {        
+//     filename: function (req, file, cb) {
 //         // null as first argument means no error
 //         const path = require('path')
 // 	    cb(null, Date.now() + path.extname(file.originalname) )
@@ -21,7 +21,7 @@ const router = Router()
 
 // // Init upload
 // const upload = multer({
-//     storage: storage, 
+//     storage: storage,
 //     limits: {
 //         fileSize: 2500000
 //     },
@@ -56,9 +56,9 @@ router.post(
 	'/add', //auth,
 	async ( req, res ) => {
 		try{
-			upload(req, res, (err) => {				
+			upload(req, res, (err) => {
 		        if (err){
-		        	// return err 
+		        	// return err
 		            return res.status(400).json({
 						message: err.message
 					})
@@ -73,11 +73,11 @@ router.post(
 
 		            	const { caption, text, email, instagram } = req.body
 
-		            	
-						if (caption.length < 5 || text.length < 5 ) {
-							
+
+						if (caption.length < 2 || text.length < 2 ) {
+
 						    return res.status(400).json({
-								message: 'text fields minimum length is 5'
+								message: 'text fields minimum length is 2'
 							})
 						}
 
@@ -98,10 +98,10 @@ router.post(
 
 						    res.status(201).json({message:'success'})
 						})
-		            }		            
+		            }
 
 		        }
-		    
+
 		    })
 		} catch(e){
 			res.status(500).json({ message: e })
@@ -147,10 +147,10 @@ router.post(
 	'/update/:id/:imageId', //auth,
 	async ( req, res ) => {
 		try{
-			upload(req, res, (err) => {				
+			upload(req, res, (err) => {
 		        if (err){
-		        	// return err 
-		        	
+		        	// return err
+
 		            return res.status(400).json({
 						message: err
 					})
@@ -159,11 +159,11 @@ router.post(
 					const team_image = req.params.imageId
 
 		        	const { caption, text, email, instagram } = req.body
-		            	
-					if (caption.length < 5 || text.length < 5 ) {
-						
+
+					if (caption.length < 2 || text.length < 2 ) {
+
 					    return res.status(400).json({
-							message: 'text fields minimum length is 5'
+							message: 'text fields minimum length is 2'
 						})
 					}
 
@@ -191,7 +191,7 @@ router.post(
 				    			return res.status(200).json({ status: 200 })
 							})
 						})
-		            }	            
+		            }
 		        }
 		    })
 		} catch(e){

@@ -12,7 +12,7 @@ router.post(
 	'/add', //auth,
 	[
 		// check('url', 'URL is invalid').isLength({ min: 5 }),
-		check('caption', 'caption minimum length is 5').isLength({ min: 5 }),
+		check('caption', 'Caption is too short').isLength({ min: 2 }),
 		oneOf([
 	       check('type').equals('gallery'),
 	       check('type').equals('contacts'),
@@ -156,7 +156,7 @@ router.post(
 	'/update/:id', //auth,
 	[
 		// check('url', 'URL is invalid').isLength({ min: 5 }),
-		check('caption', 'caption minimum length is 5').isLength({ min: 5 }),
+		check('caption', 'Caption is too short').isLength({ min: 2 }),
 		oneOf([
 	       check('type').equals('gallery'),
 	       check('type').equals('contacts'),
