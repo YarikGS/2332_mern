@@ -42,7 +42,7 @@ cloudinary.config({
 
 // api/gallery/add
 router.post(
-	'/add', //auth,
+	'/add', auth,
 	// [
 	// 	check('url', 'URL is invalid').isURL(),
 	// 	check('caption', 'caption minimum length is 5').isLength({ min: 5 }),
@@ -194,7 +194,7 @@ async (req, res) => {
 
 })
 // router.post(
-// 	'/add', //auth,
+// 	'/add', auth,
 // 	[
 // 		check('url', 'URL is invalid').isURL(),
 // 		check('caption', 'caption minimum length is 5').isLength({ min: 5 }),
@@ -315,7 +315,7 @@ router.get('/:id', async ( req, res ) => {
 })
 
 // api/gallery/remove/3
-router.get('/remove/:id', //auth,
+router.get('/remove/:id', auth,
 	async ( req, res ) => {
 	try{
 		const gallery_id = req.params.id
@@ -339,7 +339,7 @@ router.get('/remove/:id', //auth,
 
 // api/gallery/update/3
 router.post(
-	'/update/:id/', //auth,
+	'/update/:id/', auth,
 	async ( req, res, next ) => {
 		try{
 			upload(req, res, (err) => {
@@ -496,7 +496,7 @@ console.log('new id of gall', res.locals.gallery_id)
 			// res.status(201).json({message:'success'})
 	})
 // router.post(
-// 	'/update/:id', //auth,
+// 	'/update/:id', auth,
 // 	[
 // 		check('url', 'URL is invalid').isURL(),
 // 		check('caption', 'caption minimum length is 5').isLength({ min: 5 }),

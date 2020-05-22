@@ -53,7 +53,7 @@ cloudinary.config({
 
 // api/team/add
 router.post(
-	'/add', //auth,
+	'/add', auth,
 	async ( req, res ) => {
 		try{
 			upload(req, res, (err) => {
@@ -128,7 +128,7 @@ router.get('/:id', async ( req, res ) => {
 })
 
 // api/slider/remove/3
-router.get('/remove/:id/:imageId', //auth,
+router.get('/remove/:id/:imageId', auth,
  async ( req, res ) => {
 	try{
 		const team_id = req.params.id
@@ -144,7 +144,7 @@ router.get('/remove/:id/:imageId', //auth,
 })
 
 router.post(
-	'/update/:id/:imageId', //auth,
+	'/update/:id/:imageId', auth,
 	async ( req, res ) => {
 		try{
 			upload(req, res, (err) => {

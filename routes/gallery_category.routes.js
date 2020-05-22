@@ -9,7 +9,7 @@ const router = Router()
 
 // api/gallery_category/add
 router.post(
-	'/add', //auth,
+	'/add', auth,
 	[
 		// check('url', 'URL is invalid').isLength({ min: 5 }),
 		check('caption', 'Caption is too short').isLength({ min: 2 }),
@@ -126,7 +126,7 @@ router.get('/all/:type',
 })
 
 // api/gallery_category/remove/3
-router.get('/remove/:id', //auth,
+router.get('/remove/:id', auth,
 	async ( req, res ) => {
 	try{
 		const gallery_category_id = req.params.id
@@ -153,7 +153,7 @@ router.get('/remove/:id', //auth,
 
 // api/gallery_category/update/3
 router.post(
-	'/update/:id', //auth,
+	'/update/:id', auth,
 	[
 		// check('url', 'URL is invalid').isLength({ min: 5 }),
 		check('caption', 'Caption is too short').isLength({ min: 2 }),
