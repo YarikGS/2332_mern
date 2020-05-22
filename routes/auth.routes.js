@@ -62,7 +62,7 @@ router.post(
 	],
 	async (req, res)=>{
 	 	try{
-	 		
+
 			const errors =  validationResult(req)
 
 			if ( !errors.isEmpty() ) {
@@ -91,8 +91,14 @@ router.post(
 				config.get('jwtToken'),
 				{ expiresIn: '2h' }
 			)
+
+			jwt.verify(token, config.get('jwtToken'), (err, decoded_data) => {
+	      if (err) return res.status(401).send({error:err})
+	      req.auth_user = decoded_data
+	    });
+
 			console.log('Body username:', user.username)
-			res.json({ token, userId: user.id, username:user.username })
+			res.json({ token, userId: user.id, username:user.username, exp: req.auth_user.exp })
 
 		} catch(e){
 			res.status(500).json({ message: e })
