@@ -264,9 +264,9 @@ router.post(
 
 		            if ( req.file == undefined || req.file == null ) {
 		            	Slider.findByIdAndUpdate(slider_id, {caption: caption, text: text, transparency: transparency, videoId: videoId}, function(err, slider){
-			    			if (err) return res.status(500).json({ message: err })
-			    			res.status(200).json({ message: `slider item ${slider} was updated`, id:slider_id, slider: slider  })
-						})
+      			    			if (err) return res.status(500).json({ message: err })
+      			    			return res.status(200).json({ message: `slider item ${slider} was updated`, id:slider_id, slider: slider  })
+      						})
 		            }else{
 		            	const sliderFile = req.file
 
