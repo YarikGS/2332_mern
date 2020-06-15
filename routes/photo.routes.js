@@ -78,6 +78,12 @@ router.post(
 // api/photo/
 router.get('/', async ( req, res ) => {
 	try{
+    let perPage = 25
+    let page = req.query.page
+    if (!page) {
+      page = 1
+    }
+    page --
     const photo_category = req.query.category
 
     let search = { }
@@ -85,12 +91,25 @@ router.get('/', async ( req, res ) => {
     if ( photo_category !== undefined && photo_category.length ) {
       search.category = photo_category
     }
+    console.log('page for items', page);
+		// const photo = await Photo.find(search)
 
-		const photo = await Photo.find(search)
+    Photo
+    .find(search)
+    // .select('name')
+    .limit(perPage)
+    .skip(perPage * page)
+    // .sort({name: 'asc'})
+    .exec(function (err, photos) {
+      console.log('rec photos', photos);
+      Photo.count().exec(function (err, count) {
+        res.json({data: photos, page: ++page, pages: Math.ceil(count / perPage)})
+      })
+    })
 
-    console.log(photo);
-
-		res.json(photo)
+    // console.log(photo);
+    //
+		// res.json(photo)
 	} catch(e){
 		res.status(500).json({ message: 'photo action get all error' })
 	}

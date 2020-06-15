@@ -251,6 +251,12 @@ router.get('/all/:type',
 	    ], 'incorrect type of video list'),
 	], async ( req, res ) => {
 		try{
+      let perPage = 25
+      let page = req.query.page
+      if (!page) {
+        page = 1
+      }
+      page --
 			const gallery_type = req.params.type
 			const gallery_category = req.query.category
 
@@ -260,11 +266,22 @@ router.get('/all/:type',
 				search.category = gallery_category
 			}
 
-			// console.log(gallery_type)
-			// console.log(gallery_category.length)
-			// console.log(search)
 
-			const gallery = await Gallery.find( search ).populate('category', 'caption')
+			const gallery = await Gallery.find( search ).limit(perPage).skip(perPage * page).populate('category', 'caption')
+      const gallery_counter = await Gallery.count()
+      // Gallery
+      // .find(search)
+      // // .select('name')
+      // .limit(perPage)
+      // .skip(perPage * page)
+      // // .sort({name: 'asc'})
+      // .exec(function (err, photos) {
+      //   console.log('rec photos', photos);
+      //   Gallery.count().exec(function (err, count) {
+      //     res.json({photos: photos, page: ++page, pages: Math.ceil(count / perPage)})
+      //   })
+      // })
+
 
 			// const gallery = await Gallery.find()
 			// res.json(gallery)
@@ -296,7 +313,7 @@ router.get('/all/:type',
 
 			getData().then(new_gallery => {
 				// console.log(new_gallery)
-			  res.json(new_gallery)
+			  res.json({data:new_gallery, page: ++page, pages: Math.ceil(gallery_counter / perPage)})
 			})
 
 
