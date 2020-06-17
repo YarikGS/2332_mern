@@ -78,7 +78,7 @@ router.post(
 // api/photo/
 router.get('/', async ( req, res ) => {
 	try{
-    let perPage = 25
+    let perPage = 10
     let page = req.query.page
     if (!page) {
       page = 1
