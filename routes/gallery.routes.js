@@ -256,7 +256,10 @@ router.get('/all/:type',
       if (!page) {
         page = 1
       }
-      page --
+      if ( page && Number.isInteger(page)) {
+        page --
+      }
+
 			const gallery_type = req.params.type
 			const gallery_category = req.query.category
 
@@ -266,22 +269,21 @@ router.get('/all/:type',
 				search.category = gallery_category
 			}
 
+      // const gallery = await Gallery.find( search ).populate('category', 'caption')
 
-			const gallery = await Gallery.find( search ).limit(perPage).skip(perPage * page).populate('category', 'caption')
-      const gallery_counter = await Gallery.count()
-      // Gallery
-      // .find(search)
-      // // .select('name')
-      // .limit(perPage)
-      // .skip(perPage * page)
-      // // .sort({name: 'asc'})
-      // .exec(function (err, photos) {
-      //   console.log('rec photos', photos);
-      //   Gallery.count().exec(function (err, count) {
-      //     res.json({photos: photos, page: ++page, pages: Math.ceil(count / perPage)})
-      //   })
-      // })
+      let gallery, gallery_counter
 
+      if (page === 'all' ) {
+        gallery = await Gallery.find( search ).populate('category', 'caption')
+        gallery_counter = await Gallery.count()
+      }else{
+        gallery = await Gallery.find( search ).limit(perPage).skip(perPage * page).populate('category', 'caption')
+        gallery_counter = await Gallery.count()
+      }
+
+      // if (!page && page !== 'all' ) {
+      //   page = 1
+      // }
 
 			// const gallery = await Gallery.find()
 			// res.json(gallery)
@@ -313,7 +315,16 @@ router.get('/all/:type',
 
 			getData().then(new_gallery => {
 				// console.log(new_gallery)
-			  res.json({data:new_gallery, page: ++page, pages: Math.ceil(gallery_counter / perPage)})
+        let res_data
+
+        if (page === 'all' ) {
+          res_data = {data:new_gallery, page: 'all', pages: Math.ceil(gallery_counter / perPage)}
+
+        }else{
+          res_data = {data:new_gallery, page: ++page, pages: Math.ceil(gallery_counter / perPage)}
+        }
+
+        res.json(res_data)
 			})
 
 
