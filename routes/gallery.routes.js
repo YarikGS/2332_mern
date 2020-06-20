@@ -256,9 +256,7 @@ router.get('/all/:type',
       if (!page) {
         page = 1
       }
-      if ( page && Number.isInteger(page)) {
-        page --
-      }
+
 
 			const gallery_type = req.params.type
 			const gallery_category = req.query.category
@@ -277,6 +275,7 @@ router.get('/all/:type',
         gallery = await Gallery.find( search ).populate('category', 'caption')
         gallery_counter = await Gallery.count()
       }else{
+        page --
         gallery = await Gallery.find( search ).limit(perPage).skip(perPage * page).populate('category', 'caption')
         gallery_counter = await Gallery.count()
       }
