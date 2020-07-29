@@ -94,18 +94,26 @@ router.get('/', async ( req, res ) => {
     console.log('page for items', page);
 		// const photo = await Photo.find(search)
 
-    Photo
-    .find(search)
-    // .select('name')
-    .limit(perPage)
-    .skip(perPage * page)
-    // .sort({name: 'asc'})
-    .exec(function (err, photos) {
-      console.log('rec photos', photos);
-      Photo.count().exec(function (err, count) {
-        res.json({data: photos, page: ++page, pages: Math.ceil(count / perPage)})
-      })
-    })
+    // Photo
+    // .find(search)
+    //
+    // .limit(perPage)
+    // .skip(perPage * page)
+    //
+    // .exec(function (err, photos) {
+    //   console.log('rec photos', photos);
+    //   Photo.count().exec(function (err, count) {
+    //     res.json({data: photos, page: ++page, pages: Math.ceil(count / perPage)})
+    //   })
+    // })
+
+    let photo, photo_counter
+
+    page --
+    photo = await Photo.find( search ).limit(perPage).skip(perPage * page).populate('category', 'caption')
+    photo_counter = await Photo.count()
+    res_data = {data:photo, page: ++page, pages: Math.ceil(photo_counter / perPage)}
+    res.json(res_data)
 
     // console.log(photo);
     //
