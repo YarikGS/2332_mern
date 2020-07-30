@@ -83,7 +83,7 @@ router.get('/', async ( req, res ) => {
     if (!page) {
       page = 1
     }
-    page --
+
     const photo_category = req.query.category
 
     let search = { }
@@ -111,7 +111,7 @@ router.get('/', async ( req, res ) => {
 
     page --
     photo = await Photo.find( search ).limit(perPage).skip(perPage * page).populate('category', 'caption')
-    photo_counter = await Photo.count()
+    photo_counter = await Photo.find( search ).count()
     res_data = {data:photo, page: ++page, pages: Math.ceil(photo_counter / perPage)}
     res.json(res_data)
 
@@ -119,7 +119,7 @@ router.get('/', async ( req, res ) => {
     //
 		// res.json(photo)
 	} catch(e){
-		res.status(500).json({ message: 'photo action get all error' })
+		res.status(500).json({ message: 'photo action get all error', error: e })
 	}
 })
 // api/photo/3

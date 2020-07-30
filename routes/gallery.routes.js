@@ -277,7 +277,7 @@ router.get('/all/:type',
       }else{
         page --
         gallery = await Gallery.find( search ).limit(perPage).skip(perPage * page).populate('category', 'caption')
-        gallery_counter = await Gallery.count()
+        gallery_counter = await Gallery.find( search ).count()
       }
 
       // if (!page && page !== 'all' ) {
